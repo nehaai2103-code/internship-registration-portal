@@ -191,15 +191,11 @@ app.post(
     }
 
 });
-
+const path = require("path");
 app.use(express.static(__dirname));
 
 app.get("/", (req, res) => {
-  res.sendFile(__dirname + "/form2.html");
-});
-
-app.listen(5000, () => {
-   console.log("Server running on 5000");
+  res.sendFile(path.join__dirname, "form2.html");
 });
 app.listen(5000,()=>{
   console.log("Server running on 5000");
