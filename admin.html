@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Admin Dashboard — Internship Portal</title>
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --bg:#0a0e1a; --surface:#111827; --surface2:#1a2236;
+    --accent:#00d4ff; --accent2:#7c3aed;
+    --gold:#f59e0b; --green:#10b981; --red:#ef4444;
+    --text:#e2e8f0; --muted:#64748b; --border:#1e2d45;
+  }
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body { font-family: 'DM Sans', sans-serif; background: var(--bg); color: var(--text); min-height: 100vh; }
+
+  /* LOGIN */
+  #login-screen {
+    display: flex; align-items: center; justify-content: center;
+    min-height: 100vh;
+  }
+  .login-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 20px; padding: 40px; width: 340px;
+    box-shadow: 0 24px 64px rgba(0,0,0,0.5);
+    text-align: center;
+  }
+  .login-card h2 { font-family: 'Syne', sans-serif; font-size: 22px; font-weight: 800; margin-bottom: 6px; }
+  .login-card p { color: var(--muted); font-size: 13px; margin-bottom: 24px; }
+  .login-card input {
+    width: 100%; background: var(--surface2); border: 1px solid var(--border);
+    border-radius: 10px; padding: 12px 14px; color: var(--text);
+    font-family: 'DM Sans', sans-serif; font-size: 14px; outline: none;
+    margin-bottom: 12px; transition: border 0.2s;
+  }
+  .login-card input:focus { border-color: var(--accent); }
+  .btn-login {
+    width: 100%; background: linear-gradient(135deg, var(--accent2), var(--accent));
+    color: #fff; border: none; border-radius: 10px; padding: 13px;
+    font-family: 'Syne', sans-serif; font-size: 14px; font-weight: 700;
+    cursor: pointer; transition: all 0.2s;
+  }
+  .btn-login:hover { transform: translateY(-1px); }
+  .login-err { color: var(--red); font-size: 12px; margin-top: 8px; }
+
+  /* DASHBOARD */
+  #dashboard { display: none; }
+  .top-bar {
+    background: var(--surface); border-bottom: 1px solid var(--border);
+    padding: 16px 28px; display: flex; align-items: center; justify-content: space-between;
+  }
+  .top-bar h1 { font-family: 'Syne', sans-serif; font-size: 18px; font-weight: 800; }
+  .top-bar .logout {
+    background: transparent; border: 1px solid var(--border);
+    color: var(--muted); padding: 8px 16px; border-radius: 8px;
+    cursor: pointer; font-size: 13px; transition: all 0.2s;
+  }
+  .top-bar .logout:hover { color: var(--red); border-color: var(--red); }
+
+  .dash-body { padding: 28px; max-width: 1200px; margin: 0 auto; }
+
+  /* STATS */
+  .stats-row { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px,1fr)); gap: 16px; margin-bottom: 28px; }
+  .stat-card {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 14px; padding: 20px 22px;
+  }
+  .stat-label { font-size: 11px; color: var(--muted); text-transform: uppercase; letter-spacing: 0.6px; }
+  .stat-value { font-family: 'Syne', sans-serif; font-size: 32px; font-weight: 800; margin-top: 4px; }
+  .stat-value.accent { color: var(--accent); }
+  .stat-value.gold { color: var(--gold); }
+  .stat-value.green { color: var(--green); }
+  .stat-value.red { color: var(--red); }
+
+  /* FILTERS */
+  .filters { display: flex; gap: 12px; margin-bottom: 20px; flex-wrap: wrap; }
+  .filters select, .filters input {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 8px; padding: 9px 14px; color: var(--text);
+    font-family: 'DM Sans', sans-serif; font-size: 13px; outline: none;
+  }
+  .filters select option { background: var(--surface); }
+  .btn-refresh {
+    background: rgba(0,212,255,0.1); border: 1px solid var(--accent);
+    color: var(--accent); padding: 9px 18px; border-radius: 8px;
+    cursor: pointer; font-size: 13px; font-weight: 600;
+    transition: all 0.2s;
+  }
+  .btn-refresh:hover { background: rgba(0,212,255,0.18); }
+
+  /* TABLE */
+  .table-wrap {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 16px; overflow: hidden;
+  }
+  table { width: 100%; border-collapse: collapse; }
+  thead tr { background: var(--surface2); }
+  th {
+    padding: 12px 16px; text-align: left;
+    font-size: 11px; font-weight: 700; letter-spacing: 0.6px;
+    text-transform: uppercase; color: var(--muted);
+  }
+  td { padding: 13px 16px; font-size: 13px; border-top: 1px solid var(--border); vertical-align: middle; }
+  tr:hover td { background: rgba(0,212,255,0.03); }
+
+  .badge {
+    display: inline-flex; padding: 4px 10px; border-radius: 99px;
+    font-size: 11px; font-weight: 700;
+  }
+  .badge-pending { background: rgba(245,158,11,0.15); color: var(--gold); }
+  .badge-completed { background: rgba(16,185,129,0.15); color: var(--green); }
+  .badge-rejected { background: rgba(239,68,68,0.15); color: var(--red); }
+
+  .status-select {
+    background: var(--surface2); border: 1px solid var(--border);
+    color: var(--text); border-radius: 6px; padding: 5px 8px; font-size: 12px;
+    cursor: pointer;
+  }
+  .status-select:focus { outline: none; border-color: var(--accent); }
+
+  .btn-view-proof {
+    background: rgba(124,58,237,0.15); border: none; color: #a78bfa;
+    padding: 5px 10px; border-radius: 6px; cursor: pointer; font-size: 12px;
+  }
+  .btn-view-proof:hover { background: rgba(124,58,237,0.25); }
+
+  #loading { padding: 40px; text-align: center; color: var(--muted); }
+
+  /* MODAL */
+  .modal-bg {
+    display: none; position: fixed; inset: 0;
+    background: rgba(0,0,0,0.75); z-index: 100;
+    align-items: center; justify-content: center;
+  }
+  .modal-bg.open { display: flex; }
+  .modal {
+    background: var(--surface); border: 1px solid var(--border);
+    border-radius: 16px; padding: 28px; max-width: 500px; width: 90%;
+  }
+  .modal img { max-width: 100%; border-radius: 10px; margin-top: 12px; }
+  .modal-close {
+    float: right; background: none; border: 1px solid var(--border);
+    color: var(--muted); padding: 4px 10px; border-radius: 6px; cursor: pointer;
+  }
+  .modal-close:hover { color: var(--red); }
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login-screen">
+  <div class="login-card">
+    <div style="font-size:36px;margin-bottom:12px;">🔐</div>
+    <h2>Admin Login</h2>
+    <p>Internship Registration Portal</p>
+    <input type="text" id="admin-user" placeholder="Username">
+    <input type="password" id="admin-pass" placeholder="Password" onkeydown="if(event.key==='Enter')doLogin()">
+    <button class="btn-login" onclick="doLogin()">Login</button>
+    <div class="login-err" id="login-err"></div>
+  </div>
+</div>
+
+<!-- DASHBOARD -->
+<div id="dashboard">
+  <div class="top-bar">
+    <h1>🎓 Internship Admin Dashboard</h1>
+    <button class="logout" onclick="logout()">Logout</button>
+  </div>
+  <div class="dash-body">
+    <div class="stats-row" id="stats-row">
+      <div class="stat-card"><div class="stat-label">Total Registered</div><div class="stat-value accent" id="s-total">—</div></div>
+      <div class="stat-card"><div class="stat-label">Completed Fees</div><div class="stat-value green" id="s-completed">—</div></div>
+      <div class="stat-card"><div class="stat-label">Pending Fees</div><div class="stat-value gold" id="s-pending">—</div></div>
+      <div class="stat-card"><div class="stat-label">Total Revenue</div><div class="stat-value green" id="s-revenue">—</div></div>
+    </div>
+
+    <div class="filters">
+      <select id="filter-status" onchange="loadData()">
+        <option value="">All Status</option>
+        <option value="pending">Pending</option>
+        <option value="completed">Completed</option>
+        <option value="rejected">Rejected</option>
+      </select>
+      <select id="filter-domain" onchange="loadData()">
+        <option value="">All Domains</option>
+        <option>Digital Marketing</option>
+        <option>AI Product Developer</option>
+        <option>Data Analyst</option>
+        <option>Data Science</option>
+        <option>Fullstack Development</option>
+      </select>
+      <button class="btn-refresh" onclick="loadData()">↻ Refresh</button>
+    </div>
+
+    <div class="table-wrap">
+      <div id="loading">Loading registrations...</div>
+      <table id="data-table" style="display:none;">
+        <thead>
+          <tr>
+            <th>#</th>
+            <th>Reg ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Phone</th>
+            <th>College</th>
+            <th>Domain</th>
+            <th>Duration</th>
+            <th>Fee</th>
+            <th>Status</th>
+            <th>Proof</th>
+            <th>Date</th>
+          </tr>
+        </thead>
+        <tbody id="table-body"></tbody>
+      </table>
+    </div>
+  </div>
+</div>
+
+<!-- PROOF MODAL -->
+<div class="modal-bg" id="modal">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal()">✕ Close</button>
+    <h3 style="font-family:'Syne',sans-serif;font-size:16px;font-weight:700;">Payment Proof</h3>
+    <p id="modal-reg-id" style="color:var(--muted);font-size:12px;margin-top:4px;"></p>
+    <img id="modal-img" src="" alt="Payment proof">
+  </div>
+</div>
+
+<script>
+let authToken = '';
+
+function getAuth() {
+  const u = document.getElementById('admin-user').value;
+  const p = document.getElementById('admin-pass').value;
+  return 'Basic ' + btoa(u + ':' + p);
+}
+
+async function doLogin() {
+  const token = getAuth();
+  try {
+    const r = await fetch('/api/admin/stats', { headers: { Authorization: token } });
+    if (r.status === 401 || r.status === 403) {
+      document.getElementById('login-err').textContent = 'Invalid credentials';
+      return;
+    }
+    authToken = token;
+    document.getElementById('login-screen').style.display = 'none';
+    document.getElementById('dashboard').style.display = 'block';
+    loadStats();
+    loadData();
+  } catch(e) {
+    document.getElementById('login-err').textContent = 'Server not reachable';
+  }
+}
+
+function logout() {
+  authToken = '';
+  document.getElementById('login-screen').style.display = 'flex';
+  document.getElementById('dashboard').style.display = 'none';
+  document.getElementById('admin-user').value = '';
+  document.getElementById('admin-pass').value = '';
+}
+
+async function loadStats() {
+  try {
+    const r = await fetch('/api/admin/stats', { headers: { Authorization: authToken } });
+    const d = await r.json();
+    if (!d.data || !d.data.length) return;
+    const all = d.data.reduce((a,row) => {
+      a.total += row.total || 0;
+      a.completed += row.completed || 0;
+      a.pending += row.pending || 0;
+      a.revenue += row.total_revenue || 0;
+      return a;
+    }, { total:0, completed:0, pending:0, revenue:0 });
+    document.getElementById('s-total').textContent = all.total;
+    document.getElementById('s-completed').textContent = all.completed;
+    document.getElementById('s-pending').textContent = all.pending;
+    document.getElementById('s-revenue').textContent = '₹' + all.revenue.toLocaleString();
+  } catch(e) {}
+}
+
+async function loadData() {
+  document.getElementById('loading').style.display = 'block';
+  document.getElementById('data-table').style.display = 'none';
+  const status = document.getElementById('filter-status').value;
+  const domain = document.getElementById('filter-domain').value;
+  let url = '/api/admin/registrations?';
+  if (status) url += `status=${encodeURIComponent(status)}&`;
+  if (domain) url += `domain=${encodeURIComponent(domain)}&`;
+  try {
+    const r = await fetch(url, { headers: { Authorization: authToken } });
+    const d = await r.json();
+    renderTable(d.data || []);
+  } catch(e) {
+    document.getElementById('loading').textContent = 'Error loading data. Is server running?';
+  }
+}
+
+function renderTable(rows) {
+  const tbody = document.getElementById('table-body');
+  if (!rows.length) {
+    document.getElementById('loading').textContent = 'No registrations found.';
+    return;
+  }
+  tbody.innerHTML = rows.map((r, i) => `
+    <tr>
+      <td style="color:var(--muted)">${i+1}</td>
+      <td style="font-family:'Syne',sans-serif;font-size:11px;color:var(--accent);letter-spacing:0.5px">${r.registration_id}</td>
+      <td><strong>${r.first_name} ${r.last_name}</strong></td>
+      <td style="font-size:12px;color:var(--muted)">${r.email}</td>
+      <td>${r.phone}</td>
+      <td style="font-size:12px">${r.college}</td>
+      <td><span style="background:rgba(124,58,237,0.15);color:#a78bfa;padding:3px 9px;border-radius:99px;font-size:11px;font-weight:600;">${r.domain}</span></td>
+      <td style="text-align:center">${r.duration}mo</td>
+      <td style="color:var(--gold);font-weight:700">₹${(r.fee||0).toLocaleString()}</td>
+      <td>
+        <select class="status-select" onchange="updateStatus('${r.registration_id}', this.value)">
+          <option ${r.payment_status==='pending'?'selected':''} value="pending">⏳ Pending</option>
+          <option ${r.payment_status==='completed'?'selected':''} value="completed">✅ Completed</option>
+          <option ${r.payment_status==='rejected'?'selected':''} value="rejected">❌ Rejected</option>
+        </select>
+      </td>
+      <td>
+        <button class="btn-view-proof" onclick="viewProof('${r.registration_id}', '${r.first_name} ${r.last_name}')">🖼 View</button>
+      </td>
+      <td style="font-size:11px;color:var(--muted)">${r.submitted_at ? r.submitted_at.substring(0,10) : '—'}</td>
+    </tr>
+  `).join('');
+  document.getElementById('loading').style.display = 'none';
+  document.getElementById('data-table').style.display = 'table';
+}
+
+async function updateStatus(regId, status) {
+  const r = await fetch(`/api/admin/registrations/${regId}/status`, {
+    method: 'PUT',
+    headers: { Authorization: authToken, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ status })
+  });
+  const d = await r.json();
+  if (d.success) {
+    loadStats();
+    // Visual feedback
+    const sel = document.querySelector(`[onchange*="${regId}"]`);
+    if (sel) { sel.style.borderColor = status === 'completed' ? '#10b981' : status === 'rejected' ? '#ef4444' : '#f59e0b'; }
+  }
+}
+
+async function viewProof(regId, name) {
+  const r = await fetch(`/api/admin/proof/${regId}`, { headers: { Authorization: authToken } });
+  const d = await r.json();
+  if (d.success && d.proof) {
+    document.getElementById('modal-img').src = d.proof;
+    document.getElementById('modal-reg-id').textContent = `${regId} — ${name}`;
+    document.getElementById('modal').classList.add('open');
+  } else {
+    alert('No payment proof uploaded for this registration.');
+  }
+}
+
+function closeModal() { document.getElementById('modal').classList.remove('open'); }
+document.getElementById('modal').addEventListener('click', e => { if (e.target === e.currentTarget) closeModal(); });
+</script>
+</body>
+</html>
