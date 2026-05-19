@@ -1,3 +1,5 @@
+require("dotenv").config();
+
 const express = require("express");
 const { createClient } = require("@supabase/supabase-js");
 const cors = require("cors");
@@ -9,20 +11,16 @@ app.use(cors());
 app.use(express.json());
 const upload = multer({ storage: multer.memoryStorage() });
 
-const SUPABASE_URL =
-"https://wydvkbznrgjykdltyjtz.supabase.co";
-
-const SUPABASE_KEY =
-"eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind5ZHZrYnpucmdqeWtkbHR5anR6Iiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3ODgyNDM5MSwiZXhwIjoyMDk0NDAwMzkxfQ.AZNMfLDdKUE1gg-5U7DrQRH8I5qvr6lwTexXwxXhlgs";
+const SUPABASE_URL = process.env.SUPABASE_URL;
+const SUPABASE_KEY = process.env.SUPABASE_KEY;
 
 const supabase = createClient(
   SUPABASE_URL,
   SUPABASE_KEY
 );
 
-const GMAIL_USER = "nehaai2103@gmail.com";
-
-const GMAIL_PASS = "rvryrosgapqykxpd";
+const GMAIL_USER = process.env.GMAIL_USER;
+const GMAIL_PASS = process.env.GMAIL_PASS;
 
 const transporter = nodemailer.createTransport({
   service:"gmail",
