@@ -3,8 +3,16 @@ require("dotenv").config();
 const express = require("express");
 const { createClient } = require("@supabase/supabase-js");
 const cors = require("cors");
-const nodemailer = require("nodemailer");
+//const nodemailer = require("nodemailer");
 const multer = require("multer");
+const path = require("path");
+
+
+const { Resend } = require("resend");
+
+const resend = new Resend(process.env.RESEND_API_KEY);
+
+
 const app = express();
 
 app.use(cors());
@@ -117,62 +125,83 @@ app.post(
       }
 
       // email student
-     await transporter.sendMail({
+  //    await transporter.sendMail({
 
-  from:`Internship Team <${GMAIL_USER}>`,
+  // from:`Internship Team <${GMAIL_USER}>`,
 
-  to:req.body.email,
+  // to:req.body.email,
 
-  subject:"Internship Registration Successful",
+  // subject:"Internship Registration Successful",
+
+  // html: `
+  //   <div style="font-family:Arial;padding:20px">
+
+  //     <h2 style="color:#667eea;">
+  //       Internship Registration Successful 🎉
+  //     </h2>
+
+  //     <p>Hello <b>${req.body.name}</b>,</p>
+
+  //     <p>
+  //       Thank you for registering for our internship program.
+  //     </p>
+
+  //     <p>
+  //       Your payment screenshot has been received successfully.
+  //     </p>
+
+  //     <p>
+  //       Your registration is currently under verification by our team.
+  //     </p>
+
+  //     <hr>
+
+  //     <h3>Registration Details:</h3>
+
+  //     <p><b>Domain:</b> ${req.body.domain}</p>
+
+  //     <p><b>Duration:</b> ${req.body.duration}</p>
+
+  //     <p><b>Amount Paid:</b> ₹${req.body.amount}</p>
+
+  //     <p><b>Status:</b> Pending Verification</p>
+
+  //     <br>
+
+  //     <p>
+  //       We will contact you shortly with further internship details.
+  //     </p>
+
+  //     <p>
+  //       Regards,<br>
+  //       Internship Team
+  //     </p>
+
+  //   </div>
+  // `
+// });
+await resend.emails.send({
+
+  from: "onboarding@resend.dev",
+
+  to: req.body.email,
+
+  subject: "Internship Registration Successful",
 
   html: `
-    <div style="font-family:Arial;padding:20px">
+    <h2>Registration Successful 🎉</h2>
 
-      <h2 style="color:#667eea;">
-        Internship Registration Successful 🎉
-      </h2>
+    <p>Hello ${req.body.name},</p>
 
-      <p>Hello <b>${req.body.name}</b>,</p>
+    <p>Your internship registration was submitted successfully.</p>
 
-      <p>
-        Thank you for registering for our internship program.
-      </p>
+    <p>Domain: ${req.body.domain}</p>
 
-      <p>
-        Your payment screenshot has been received successfully.
-      </p>
+    <p>Duration: ${req.body.duration}</p>
 
-      <p>
-        Your registration is currently under verification by our team.
-      </p>
-
-      <hr>
-
-      <h3>Registration Details:</h3>
-
-      <p><b>Domain:</b> ${req.body.domain}</p>
-
-      <p><b>Duration:</b> ${req.body.duration}</p>
-
-      <p><b>Amount Paid:</b> ₹${req.body.amount}</p>
-
-      <p><b>Status:</b> Pending Verification</p>
-
-      <br>
-
-      <p>
-        We will contact you shortly with further internship details.
-      </p>
-
-      <p>
-        Regards,<br>
-        Internship Team
-      </p>
-
-    </div>
+    <p>Amount: ₹${req.body.amount}</p>
   `
 });
-
       res.json({
         success:true,
         message:"Registration successful"
