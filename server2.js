@@ -31,7 +31,8 @@ const transporter = nodemailer.createTransport({
     pass:GMAIL_PASS
   }
 });
-app.use(express.json())
+app.use(express.json());
+app.use(express.urlencoded({extended:true}));
 app.post(
   "/register",
   upload.single("paymentScreenshot"),
@@ -195,8 +196,10 @@ const path = require("path");
 app.use(express.static(__dirname));
 
 app.get("/", (req, res) => {
-  res.sendFile(path.join__dirname, "form2.html");
+  res.sendFile(path.join(__dirname, "form2.html"));
 });
-app.listen(5000,()=>{
-  console.log("Server running on 5000");
+
+const PORT = process.env.PORT||5000;
+app.listen(PORT,()=>{
+  console.log('Server running on ${PORT}');
 });
