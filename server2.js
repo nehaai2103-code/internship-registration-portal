@@ -180,15 +180,14 @@ app.post(
 
     } catch(err){
 
-      console.log(err);
+  console.log("FULL ERROR:", err);
 
-      res.json({
-        success:false,
-        message:"Server error"
-      });
+  res.json({
+    success:false,
+    message: err.message
+  });
 
-    }
-
+}
 });
 const path = require("path");
 app.use(express.static(__dirname));
@@ -199,5 +198,5 @@ app.get("/", (req, res) => {
 
 const PORT = process.env.PORT||5000;
 app.listen(PORT,()=>{
-  console.log('Server running on ${PORT}');
+  console.log(`Server running on ${PORT}`);
 });
