@@ -5,7 +5,6 @@ const { createClient } = require("@supabase/supabase-js");
 const cors = require("cors");
 //const nodemailer = require("nodemailer");
 const multer = require("multer");
-const path = require("path");
 
 
 const { Resend } = require("resend");
@@ -30,13 +29,13 @@ const supabase = createClient(
 const GMAIL_USER = process.env.GMAIL_USER;
 const GMAIL_PASS = process.env.GMAIL_PASS;
 
-const transporter = nodemailer.createTransport({
-  service:"gmail",
-  auth:{
-    user:GMAIL_USER,
-    pass:GMAIL_PASS
-  }
-});
+// const transporter = nodemailer.createTransport({
+//   service:"gmail",
+//   auth:{
+//     user:GMAIL_USER,
+//     pass:GMAIL_PASS
+//   }
+// });
 app.use(express.json());
 app.use(express.urlencoded({extended:true}));
 app.post(
@@ -208,14 +207,12 @@ await resend.emails.send({
       });
 
     } catch(err){
+  console.log("🔥 FULL BACKEND ERROR:", err);
 
-  console.log("FULL ERROR:", err);
-
-  res.json({
+  return res.json({
     success:false,
     message: err.message
   });
-
 }
 });
 const path = require("path");
