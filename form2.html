@@ -113,7 +113,11 @@
         </div>
         <div class="input-group">
           <label>Phone Number *</label>
-          <input type="tel" id="phone" placeholder="10-digit number"/>
+          <input type="text"
+       id="phone"
+       maxlength="10"
+       pattern="[0-9]{10}"
+       required>
         </div>
       </div>
       <div class="input-group">
@@ -340,6 +344,40 @@ function selectDuration(dur, amt, cardId) {
 
   document.getElementById("amtPreview")
     .innerText = amt;
+}
+
+function validateStep1() {
+
+    const fullName = document.getElementById("fullName").value.trim();
+    const dob = document.getElementById("dob").value;
+    const email = document.getElementById("email").value.trim();
+    const phone = document.getElementById("phone").value.trim();
+
+    if(fullName === ""){
+        alert("Please enter Full Name");
+        return false;
+    }
+
+    if(dob === ""){
+        alert("Please select Date of Birth");
+        return false;
+    }
+
+    const emailPattern = /^[^ ]+@[^ ]+\.[a-z]{2,3}$/;
+
+    if(!email.match(emailPattern)){
+        alert("Please enter valid Email");
+        return false;
+    }
+
+    const phonePattern = /^[0-9]{10}$/;
+
+    if(!phone.match(phonePattern)){
+        alert("Phone Number must be 10 digits");
+        return false;
+    }
+
+    return true;
 }
 
 function goToPayment() {
