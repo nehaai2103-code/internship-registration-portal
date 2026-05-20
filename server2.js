@@ -250,7 +250,6 @@ app.get("/admin", (req, res) => {
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log("═══════════════════════════════════════");
-  console.log(`🚀  Server running → http://localhost:${PORT}`);
-  console.log(`🔐  Admin panel   → http://localhost:${PORT}/admin`);
+  console.log("Server running on port" + PORT);
   console.log("═══════════════════════════════════════");
 });
