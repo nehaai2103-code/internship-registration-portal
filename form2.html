@@ -113,11 +113,14 @@
         </div>
         <div class="input-group">
           <label>Phone Number *</label>
-          <input type="text"
-       id="phone"
-       maxlength="10"
-       pattern="[0-9]{10}"
-       required>
+          <input
+  type="tel"
+  id="phone"
+  maxlength="10"
+  placeholder="Enter 10 digit number"
+  oninput="this.value=this.value.replace(/[^0-9]/g,'')"
+  required
+/>
         </div>
       </div>
       <div class="input-group">
@@ -128,13 +131,9 @@
         <label>LinkedIn Profile URL</label>
         <input type="url" id="linkedin" placeholder="https://linkedin.com/in/yourname"/>
       </div>
-      <button class="btn btn-primary" onclick="if(validateStep1()) goTo(2)">
+      <button class="btn btn-primary" onclick="validateStep1()">
     Next → Academic Details
 </button>
-<input type="text" id="fullName" required>
-<input type="date" id="dob" required>
-<input type="email" id="email" required>
-<input type="text" id="phone" required maxlength="10">
     </div>
 
     <!-- STEP 2: Academic Info -->
@@ -354,36 +353,66 @@ function selectDuration(dur, amt, cardId) {
 
 function validateStep1() {
 
-    const fullName = document.getElementById("fullName").value.trim();
-    const dob = document.getElementById("dob").value;
-    const email = document.getElementById("email").value.trim();
-    const phone = document.getElementById("phone").value.trim();
+  const name = document.getElementById("name").value.trim();
+  const dob = document.getElementById("dob").value;
+  const email = document.getElementById("email").value.trim();
+  const phone = document.getElementById("phone").value.trim();
 
-    if(fullName === ""){
-        alert("Please enter Full Name");
-        return false;
-    }
+  if (name === "") {
+    alert("Please enter Full Name");
+    return;
+  }
 
-    if(dob === ""){
-        alert("Please select Date of Birth");
-        return false;
-    }
+  if (dob === "") {
+    alert("Please select Date of Birth");
+    return;
+  }
 
-    const emailPattern = /^[^ ]+@[^ ]+\.[a-z]{2,3}$/;
+  const emailPattern = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-    if(!email.match(emailPattern)){
-        alert("Please enter valid Email");
-        return false;
-    }
+  if (!emailPattern.test(email)) {
+    alert("Please enter valid Email");
+    return;
+  }
 
-    const phonePattern = /^[0-9]{10}$/;
+  const phonePattern = /^[0-9]{10}$/;
 
-    if(!phone.match(phonePattern)){
-        alert("Phone Number must be 10 digits");
-        return false;
-    }
+  if (!phonePattern.test(phone)) {
+    alert("Phone Number must be exactly 10 digits");
+    return;
+  }
 
-    return true;
+  goTo(2);
+}
+
+function validateStep2() {
+
+  const college = document.getElementById("college").value.trim();
+  const department = document.getElementById("department").value.trim();
+  const year = document.getElementById("year").value;
+  const domain = document.getElementById("domain").value;
+
+  if (college === "") {
+    alert("Please enter College Name");
+    return false;
+  }
+
+  if (department === "") {
+    alert("Please enter Department");
+    return false;
+  }
+
+  if (year === "") {
+    alert("Please select Year");
+    return false;
+  }
+
+  if (domain === "") {
+    alert("Please select Internship Domain");
+    return false;
+  }
+
+  return true;
 }
 
 function goToPayment() {

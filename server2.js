@@ -11,7 +11,10 @@ const app    = express();
 const resend = new Resend(process.env.RESEND_API_KEY);
 const upload = multer({ storage: multer.memoryStorage() });
 
-app.use(cors());
+app.use(cors({
+  origin: "*"
+}));
+
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 

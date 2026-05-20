@@ -370,7 +370,9 @@ async function loadStudents() {
         }
       }
     );
-    allStudents = await res.json();
+    const data = await res.json();
+    console.log(data);
+    allStudents = data;
 
     updateStats();
     renderTable();
