@@ -99,7 +99,7 @@
       <div class="row">
         <div class="input-group">
           <label>Full Name *</label>
-          <input type="text" id="name" placeholder="Enter your full name"/>
+          <input type="text" id="name" placeholder="Enter your full name" required/>
         </div>
         <div class="input-group">
           <label>Date of Birth *</label>
@@ -109,7 +109,7 @@
       <div class="row">
         <div class="input-group">
           <label>Email Address *</label>
-          <input type="email" id="email" placeholder="you@email.com"/>
+          <input type="email" id="email" placeholder="you@email.com" required/>
         </div>
         <div class="input-group">
           <label>Phone Number *</label>
@@ -128,7 +128,13 @@
         <label>LinkedIn Profile URL</label>
         <input type="url" id="linkedin" placeholder="https://linkedin.com/in/yourname"/>
       </div>
-      <button class="btn btn-primary" onclick="goTo(2)">Next → Academic Details</button>
+      <button class="btn btn-primary" onclick="if(validateStep1()) goTo(2)">
+    Next → Academic Details
+</button>
+<input type="text" id="fullName" required>
+<input type="date" id="dob" required>
+<input type="email" id="email" required>
+<input type="text" id="phone" required maxlength="10">
     </div>
 
     <!-- STEP 2: Academic Info -->
@@ -191,7 +197,7 @@
       </div>
       <div class="btn-row">
         <button class="btn btn-outline" onclick="goTo(1)">← Back</button>
-        <button class="btn btn-primary" onclick="goTo(3)">Next → Choose Duration</button>
+        <button class="btn btn-primary" onclick="if(validateStep2())goTo(3)">Next → Choose Duration</button>
       </div>
     </div>
 

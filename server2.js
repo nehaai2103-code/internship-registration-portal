@@ -30,6 +30,24 @@ app.post("/register", upload.single("paymentScreenshot"), async (req, res) => {
   console.log("BODY:", req.body);
   console.log("FILE:", req.file ? req.file.originalname : "No file");
 
+const { name, email, phone } = req.body;
+
+if (!name || !email || !phone) {
+  return res.json({
+    success: false,
+    message: "All fields required"
+  });
+}
+
+const phoneRegex = /^[0-9]{10}$/;
+
+if (!phoneRegex.test(phone)) {
+  return res.json({
+    success: false,
+    message: "Phone must be 10 digits"
+  });
+}
+
   if (!req.file) {
     return res.json({ success: false, message: "No screenshot received" });
   }
