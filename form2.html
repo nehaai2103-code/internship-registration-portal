@@ -433,14 +433,6 @@ function goToPayment() {
 }
 
 
-  const screenshot =
-    document.getElementById("paymentScreenshot").files[0];
-
-  if(!screenshot){
-    alert("Please upload payment screenshot");
-    return;
-  }
-
 
   function sendMail(name, email) {
 
@@ -456,6 +448,14 @@ function goToPayment() {
   });
 }
 async function submitForm() {
+
+   const screenshot =
+    document.getElementById("paymentScreenshot").files[0];
+
+  if(!screenshot){
+    alert("Please upload payment screenshot");
+    return;
+  }
 
   const formData = new FormData();
 
