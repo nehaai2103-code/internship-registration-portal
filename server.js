@@ -167,7 +167,7 @@ app.post("/send-status-email", async (req, res) => {
       // ── Send CONFIRMED email ──────────────────────────────
       await resend.emails.send({
         from:    "onboarding@resend.dev",
-        to:      email,
+        to:     email,
         subject: "🎉 Internship Registration Confirmed!",
         html: `
           <div style="font-family:'Segoe UI',Arial,sans-serif;max-width:600px;margin:auto;border:1px solid #e0e0e0;border-radius:14px;overflow:hidden">
@@ -200,7 +200,7 @@ app.post("/send-status-email", async (req, res) => {
       // ── Send REJECTED email ───────────────────────────────
       await resend.emails.send({
         from:    "onboarding@resend.dev",
-        to:      formData.email,
+        to:      email,
         subject: "⚠️ Payment Verification Issue — Action Required",
         html: `
           <div style="font-family:'Segoe UI',Arial,sans-serif;max-width:600px;margin:auto;border:1px solid #e0e0e0;border-radius:14px;overflow:hidden">
