@@ -432,7 +432,6 @@ function goToPayment() {
   goTo(4);
 }
 
-async function submitForm() {
 
   const screenshot =
     document.getElementById("paymentScreenshot").files[0];
@@ -441,6 +440,22 @@ async function submitForm() {
     alert("Please upload payment screenshot");
     return;
   }
+
+
+  function sendMail(name, email) {
+
+  emailjs.send("service_r7wuzur", "template_sikd1np", {
+    name: name,
+    email: email
+  })
+  .then(() => {
+    console.log("Email Sent");
+  })
+  .catch((error) => {
+    console.log(error);
+  });
+}
+async function submitForm() {
 
   const formData = new FormData();
 
@@ -478,6 +493,11 @@ const result = await response.json();
 console.log(result);
     if(result.success){
 
+      sendMail(
+  document.getElementById("name").value,
+  document.getElementById("email").value
+);
+
       document.querySelectorAll(".step")
         .forEach(s => s.style.display="none");
 
@@ -513,5 +533,11 @@ console.log(result);
 }
 
 </script>
+
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script>
+emailjs.init("J8k7TQ03F2wgWZyoV");
+</script>
+
 </body>
 </html>
