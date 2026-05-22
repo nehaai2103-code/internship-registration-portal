@@ -140,7 +140,7 @@ if (!phoneRegex.test(phone)) {
     });
 
     console.log(`✅ Registration saved & pending email sent to ${req.body.email}`);
-    return res.json({ success: true, message: "Registration successful" });
+    return res.json({ success: true, message: "Registration successful" });                      
 
   } catch (err) {
     console.log("🔥 FULL BACKEND ERROR:", err);
@@ -256,3 +256,7 @@ app.listen(PORT, () => {
   console.log("Server running on port" + PORT);
   console.log("═══════════════════════════════════════");
 });
+
+
+
+

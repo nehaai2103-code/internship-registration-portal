@@ -275,14 +275,17 @@
         <option value="3 Months">3 Months</option>
       </select>
       <button class="refresh-btn" onclick="loadStudents()">🔄 Refresh</button>
-    </div>
+    <button class="refresh-btn" onclick="downloadExcel()">
+  📥 Download Excel
+     </button>
+</div>
 
     <!-- Table -->
     <div class="table-wrap">
       <div class="loading" id="loadingDiv">
         <div class="spinner"></div><br/>Loading registrations...
       </div>
-      <table id="mainTable" style="display:none">
+      <table id="registrationTable" style="display:none">
         <thead>
           <tr>
             <th>#</th>
@@ -576,6 +579,18 @@ function showToast(msg, type="") {
   t.className   = "toast show " + type;
   setTimeout(() => t.className = "toast", 3500);
 }
+
+function downloadExcel() {
+
+  const table = document.getElementById("registrationTable");
+
+  const workbook = XLSX.utils.table_to_book(table);
+
+  XLSX.writeFile(workbook, "Internship_Registrations.xlsx");
+}
 </script>
+
+<script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+
 </body>
 </html>
