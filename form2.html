@@ -294,9 +294,11 @@
       </button>
 
       <button
-        class="btn btn-success"
-        onclick="submitForm()"
-      >
+  type="button"
+  class="btn btn-success"
+  onclick="submitForm()"
+>
+      
         ✅ Submit Registration
       </button>
 
@@ -322,7 +324,7 @@
 
 <script>
 
-const BACKEND_URL ="https://internship-registration-portal.onrender.com/register";
+const BACKEND_URL ="https://internship-registration-portal.onrender.com";
 
 let selectedDuration = "";
 let selectedAmount = 0;
@@ -434,6 +436,7 @@ function goToPayment() {
 
 async function submitForm() {
 
+console.log("Submit started");
   const screenshot =
     document.getElementById("paymentScreenshot").files[0];
 
@@ -468,7 +471,8 @@ async function submitForm() {
 
   try {
 
-    const res = await fetch(BACKEND_URL, {
+   console.log("Sending request...")
+   const res = await fetch(`${BACKEND_URL}/register`, {
       method: "POST",
       body: formData
     });
