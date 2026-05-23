@@ -481,67 +481,54 @@ async function submitForm() {
 
   formData.append("paymentScreenshot", screenshot);
 
+
   try {
-console.log("Submitting form...");
 
-  const response = await fetch(BACKEND_URL,{
-  method:"POST",
-  body: formData
+    const res = await fetch(BACKEND_URL,{
+      method: "POST",
+      body: formData
+    });
+
+    const result = await res.json();   // 🔥 IMPORTANT LINE
+
+    console.log(result);
+
+    if (result && result.success === true) {
+
+      // ✅ EmailJS - student submit mail
+      emailjs.send("service_id", "template_submit_student", {
+  name: document.getElementById("name").value,
+  email: document.getElementById("email").value,
+  domain: document.getElementById("domain").value,
+  amount: selectedAmount
 });
-console.log("Response received");
 
-const result = await response.json();
+      // ✅ EmailJS - admin mail
+      emailjs.send("service_id", "template_admin_notify", {
+        name: form.name.value,
+        email: form.email.value,
+        phone: form.phone.value
+      });
 
-console.log(result);
-    if(result.success){
-
-      sendMail(
-  document.getElementById("name").value,
-  document.getElementById("email").value,
-  document.getElementById("domain").value,
-  selectedDuration
-);
-
-      document.querySelectorAll(".step")
-        .forEach(s => s.style.display="none");
-
-      document.getElementById("successBox")
-        .style.display="block";
-
-      document.getElementById("successName")
-        .innerText = document.getElementById("name").value;
-
-      document.getElementById("successEmail")
-        .innerText = document.getElementById("email").value;
-
-      document.getElementById("successDuration")
-        .innerText = selectedDuration;
-
-      document.getElementById("successAmt")
-        .innerText = selectedAmount;
+      alert("Registration successful!");
 
     } else {
-
-      alert(result.message);
-
+      alert(result.message || "Something went wrong");
     }
 
-  } catch(err){
-
+  } catch (err) {
     console.log(err);
-
     alert("Server error");
-
   }
-
 }
+
 
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-<script>
+<!-- <script>
 emailjs.init("J8k7TQ03F2wgWZyoV");
-</script>
+</script> -->
 
 </body>
 </html>

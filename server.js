@@ -12,7 +12,10 @@ const resend = new Resend(process.env.RESEND_API_KEY);
 const upload = multer({ storage: multer.memoryStorage() });
 
 app.use(cors({
-  origin: "*"
+  origin: [
+    "http://localhost:5000",
+    "ttps://internship-registration-portal.onrender.com/register"
+  ]
 }));
 
 app.use(express.json());

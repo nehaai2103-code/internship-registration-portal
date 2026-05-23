@@ -356,36 +356,55 @@ function logout() {
   document.getElementById("adminPass").value = "";
 }
 
-// ── Load Data from Supabase ──────────────────────────────────
-async function loadStudents() {
-  document.getElementById("loadingDiv").style.display  = "block";
-  document.getElementById("mainTable").style.display   = "none";
-  document.getElementById("noData").style.display      = "none";
+
+
+async function updateStatus(id, email, name, newStatus) {
+
+  const action = newStatus === "verified" ? "verify" : "reject";
+  if(!confirm(`Are you sure you want to ${action} ${name}?`)) return;
 
   try {
-    const res  = await fetch(
-      `${SUPABASE_URL}/rest/v1/registrations?select=*&order=created_at.desc`,
+
+    // 1. Update Supabase
+    const res = await fetch(
+      `${SUPABASE_URL}/rest/v1/registrations?id=eq.${id}`,
       {
+        method: "PATCH",
         headers: {
-          "apikey":        SUPABASE_KEY,
-          "Authorization": `Bearer ${SUPABASE_KEY}`
-        }
+          "apikey": SUPABASE_KEY,
+          "Authorization": `Bearer ${SUPABASE_KEY}`,
+          "Content-Type": "application/json",
+          "Prefer": "return=minimal"
+        },
+        body: JSON.stringify({ status: newStatus })
       }
     );
-    const data = await res.json();
-    console.log(data);
-    allStudents = data;
 
-    updateStats();
-    renderTable();
+    if(!res.ok) throw new Error("Update failed");
 
-    document.getElementById("lastRefresh").innerText =
-      "Last updated: " + new Date().toLocaleTimeString();
+    // 2. Send EMAILJS EMAIL
+    // if(newStatus === "verified") {
+
+    //   await emailjs.send("service_id", "template_verified", {
+    //     to_email: email,
+    //     name: name
+    //   });
+
+    // } else if(newStatus === "rejected") {
+
+    //   await emailjs.send("service_id", "template_rejected", {
+    //     to_email: email,
+    //     name: name
+    //   });
+    // }
+
+    showToast(`Status updated + email sent`, "green");
+
+    await loadStudents();
+    closeModalDirect();
 
   } catch(err) {
-    showToast("❌ Failed to load data: " + err.message, "red");
-  } finally {
-    document.getElementById("loadingDiv").style.display = "none";
+    showToast("Error: " + err.message, "red");
   }
 }
 
@@ -591,6 +610,12 @@ function downloadExcel() {
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/xlsx/dist/xlsx.full.min.js"></script>
+
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+
+<script>
+  emailjs.init("J8k7TQ03F2wgWZyoV");
+</script>
 
 </body>
 </html>
