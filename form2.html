@@ -438,7 +438,9 @@ function goToPayment() {
 async function submitForm() {
 
 console.log("Submit started");
-  const screenshot =
+document.querySelector(".btn-success").disabled = true;
+  
+const screenshot =
     document.getElementById("paymentScreenshot").files[0];
 
   if (!screenshot) {

@@ -21,10 +21,7 @@ const transporter = nodemailer.createTransport({
 const upload = multer({ storage: multer.memoryStorage() });
 
 app.use(cors({
-  origin: [
-    "http://localhost:5000",
-    "https://internship-registration-portal.onrender.com"
-  ]
+  origin:"*"
 }));
 
 app.use(express.json());
