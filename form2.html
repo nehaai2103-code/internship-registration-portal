@@ -493,23 +493,34 @@ async function submitForm() {
 
     console.log(result);
 
-    if (result && result.success === true) {
+    if (result.success) {
 
-      // ✅ EmailJS - student submit mail
-      emailjs.send("service_id", "template_submit_student", {
+      // ✅ Send email to STUDENT
+emailjs.send("service_r7wuzur", "template_submit_student", {
   name: document.getElementById("name").value,
   email: document.getElementById("email").value,
   domain: document.getElementById("domain").value,
+  duration: selectedDuration,
   amount: selectedAmount
-});
+})
+.then(() => {
+  console.log("Student email sent");
+})
+.catch(err => console.log(err));
 
-      // ✅ EmailJS - admin mail
-      emailjs.send("service_id", "template_admin_notify", {
-        name: form.name.value,
-        email: form.email.value,
-        phone: form.phone.value
-      });
 
+// ✅ Send email to ADMIN
+emailjs.send("service_r7wuzur", "template_admin_notify", {
+  name: document.getElementById("name").value,
+  email: document.getElementById("email").value,
+  phone: document.getElementById("phone").value,
+  duration: selectedDuration,
+  amount: selectedAmount
+})
+.then(() => {
+  console.log("Admin email sent");
+})
+.catch(err => console.log(err));
       alert("Registration successful!");
 
     } else {
@@ -526,9 +537,9 @@ async function submitForm() {
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
-<!-- <script>
+<script>
 emailjs.init("J8k7TQ03F2wgWZyoV");
-</script> -->
+</script>
 
 </body>
 </html>

@@ -365,7 +365,7 @@ async function updateStatus(id, email, name, newStatus) {
 
   try {
 
-    // 1. Update Supabase
+    // ✅ 1. UPDATE SUPABASE (KEEP THIS SAME)
     const res = await fetch(
       `${SUPABASE_URL}/rest/v1/registrations?id=eq.${id}`,
       {
@@ -380,31 +380,29 @@ async function updateStatus(id, email, name, newStatus) {
       }
     );
 
-    if(!res.ok) throw new Error("Update failed");
+    if(!res.ok) throw new Error("Supabase update failed");
 
-    // 2. Send EMAILJS EMAIL
-    // if(newStatus === "verified") {
+    // ✅ 2. SEND EMAIL USING EMAILJS (NEW PART)
 
-    //   await emailjs.send("service_id", "template_verified", {
-    //     to_email: email,
-    //     name: name
-    //   });
+    if(newStatus === "verified") {
 
-    // } else if(newStatus === "rejected") {
+      emailjs.send("service_r7wuzur", "template_verified", {
+        name: name,
+        email: email
+      })
+      .then(() => console.log("Verified email sent"))
+      .catch(err => console.log(err));
 
-    //   await emailjs.send("service_id", "template_rejected", {
-    //     to_email: email,
-    //     name: name
-    //   });
-    // }
+    }
 
-    showToast(`Status updated + email sent`, "green");
+    // ✅ 3. SUCCESS MESSAGE
+    alert("Status updated and email sent");
 
     await loadStudents();
     closeModalDirect();
 
   } catch(err) {
-    showToast("Error: " + err.message, "red");
+    alert("Error: " + err.message);
   }
 }
 
