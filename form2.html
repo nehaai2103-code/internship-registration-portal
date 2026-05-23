@@ -451,10 +451,9 @@ function goToPayment() {
 }
 async function submitForm() {
 
-   const screenshot =
-    document.getElementById("paymentScreenshot").files[0];
+  const screenshot = document.getElementById("paymentScreenshot").files[0];
 
-  if(!screenshot){
+  if (!screenshot) {
     alert("Please upload payment screenshot");
     return;
   }
@@ -464,64 +463,67 @@ async function submitForm() {
   formData.append("name", document.getElementById("name").value);
   formData.append("email", document.getElementById("email").value);
   formData.append("phone", document.getElementById("phone").value);
-  formData.append("whatsapp", document.getElementById("whatsapp").value);
-  formData.append("dob", document.getElementById("dob").value);
-  formData.append("linkedin", document.getElementById("linkedin").value);
-  formData.append("college", document.getElementById("college").value);
-  formData.append("department", document.getElementById("department").value);
-  formData.append("year", document.getElementById("year").value);
-  formData.append("cgpa", document.getElementById("cgpa").value);
   formData.append("domain", document.getElementById("domain").value);
-  formData.append("skills", document.getElementById("skills").value);
-  formData.append("referral", document.getElementById("referral").value);
   formData.append("duration", selectedDuration);
   formData.append("amount", selectedAmount);
-  formData.append("startDate", document.getElementById("startDate").value);
-  formData.append("message", document.getElementById("message").value);
-
   formData.append("paymentScreenshot", screenshot);
-
 
   try {
 
-    const res = await fetch(BACKEND_URL,{
+    const res = await fetch(BACKEND_URL, {
       method: "POST",
       body: formData
     });
 
-    const result = await res.json();   // 🔥 IMPORTANT LINE
-
+    const result = await res.json();
     console.log(result);
 
     if (result.success) {
 
-      // ✅ Send email to STUDENT
-emailjs.send("service_r7wuzur", "template_submit_student", {
-  name: document.getElementById("name").value,
-  email: document.getElementById("email").value,
-  domain: document.getElementById("domain").value,
-  duration: selectedDuration,
-  amount: selectedAmount
-})
-.then(() => {
-  console.log("Student email sent");
-})
-.catch(err => console.log(err));
+      // ✅ STUDENT MAIL
+      try {
+        await emailjs.send("service_r7wuzur", "template_sikd1np", {
+          name: document.getElementById("name").value,
+          email: document.getElementById("email").value,
+          domain: document.getElementById("domain").value,
+          duration: selectedDuration,
+          amount: selectedAmount
+        });
+        console.log("Student mail sent");
+      } catch (err) {
+        console.log("Student mail failed", err);
+      }
 
+      // ✅ ADMIN MAIL (IMPORTANT CHANGE)
+      try {
+        await emailjs.send("service_r7wuzur", "template_admin_notify", {
+          name: document.getElementById("name").value,
+          email: document.getElementById("email").value,
+          phone: document.getElementById("phone").value,
+          duration: selectedDuration,
+          amount: selectedAmount,
+          to_email: "nehaai2103@gmail.com"
+        });
+        console.log("Admin mail sent");
+      } catch (err) {
+        console.log("Admin mail failed", err);
+      }
 
-// ✅ Send email to ADMIN
-emailjs.send("service_r7wuzur", "template_admin_notify", {
-  name: document.getElementById("name").value,
-  email: document.getElementById("email").value,
-  phone: document.getElementById("phone").value,
-  duration: selectedDuration,
-  amount: selectedAmount
-})
-.then(() => {
-  console.log("Admin email sent");
-})
-.catch(err => console.log(err));
-      alert("Registration successful!");
+      // ✅ SHOW SUCCESS PAGE (IMPORTANT)
+      document.querySelector(".form-body").style.display = "none";
+      document.getElementById("successBox").style.display = "block";
+
+      document.getElementById("successName").innerText =
+        document.getElementById("name").value;
+
+      document.getElementById("successEmail").innerText =
+        document.getElementById("email").value;
+
+      document.getElementById("successDuration").innerText =
+        selectedDuration;
+
+      document.getElementById("successAmt").innerText =
+        selectedAmount;
 
     } else {
       alert(result.message || "Something went wrong");
@@ -532,8 +534,6 @@ emailjs.send("service_r7wuzur", "template_admin_notify", {
     alert("Server error");
   }
 }
-
-
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
