@@ -23,7 +23,7 @@ const upload = multer({ storage: multer.memoryStorage() });
 app.use(cors({
   origin: [
     "http://localhost:5000",
-    "https://internship-registration-portal.onrender.com/register"
+    "https://internship-registration-portal.onrender.com"
   ]
 }));
 
