@@ -24,7 +24,15 @@ app.use(cors({
   origin:"*"
 }));
 
-app.use(express.json());
+app.use((req, res, next) => {
+  req.setTimeout(50000);
+  res.setTimeout(50000);
+  next();
+});
+
+app.use(express.json({ limit: "50mb" }));
+app.use(express.urlencoded({ extended: true, limit: "50mb" }));
+
 app.use(express.urlencoded({ extended: true }));
 
 // ── Supabase ──────────────────────────────────────────────────
@@ -38,7 +46,8 @@ const supabase = createClient(
 //  Called by index.html (student registration form)
 // ═══════════════════════════════════════════════════════════════
 app.post("/register", upload.single("paymentScreenshot"), async (req, res) => {
-
+  console.log("Registration API called");
+  
   console.log("BODY:", req.body);
   console.log("FILE:", req.file ? req.file.originalname : "No file");
 
