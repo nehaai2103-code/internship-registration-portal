@@ -5,16 +5,25 @@ const { createClient } = require("@supabase/supabase-js");
 const cors    = require("cors");
 const multer  = require("multer");
 const path    = require("path");
-const { Resend } = require("resend");
-
+//const { Resend } = require("resend");
+const nodemailer = require("nodemailer");
 const app    = express();
-const resend = new Resend(process.env.RESEND_API_KEY);
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: process.env.EMAIL_USER,
+    pass: process.env.EMAIL_PASS
+  }
+});
+
+
+//const resend = new Resend(process.env.RESEND_API_KEY);
 const upload = multer({ storage: multer.memoryStorage() });
 
 app.use(cors({
   origin: [
     "http://localhost:5000",
-    "ttps://internship-registration-portal.onrender.com/register"
+    "https://internship-registration-portal.onrender.com/register"
   ]
 }));
 
@@ -106,9 +115,9 @@ if (!phoneRegex.test(phone)) {
     }
 
     // 3. Send PENDING email to student
-    await resend.emails.send({
-      from:    "onboarding@resend.dev",
-      to:      req.body.email,
+    await transporter.sendMail({
+      from: process.env.EMAIL_USER,
+      to:   req.body.email,
       subject: "⏳ Registration Received — Payment Pending Verification",
       html: `
         <div style="font-family:'Segoe UI',Arial,sans-serif;max-width:600px;margin:auto;border:1px solid #e0e0e0;border-radius:14px;overflow:hidden">

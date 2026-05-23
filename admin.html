@@ -358,54 +358,6 @@ function logout() {
 
 
 
-async function updateStatus(id, email, name, newStatus) {
-
-  const action = newStatus === "verified" ? "verify" : "reject";
-  if(!confirm(`Are you sure you want to ${action} ${name}?`)) return;
-
-  try {
-
-    // ✅ 1. UPDATE SUPABASE (KEEP THIS SAME)
-    const res = await fetch(
-      `${SUPABASE_URL}/rest/v1/registrations?id=eq.${id}`,
-      {
-        method: "PATCH",
-        headers: {
-          "apikey": SUPABASE_KEY,
-          "Authorization": `Bearer ${SUPABASE_KEY}`,
-          "Content-Type": "application/json",
-          "Prefer": "return=minimal"
-        },
-        body: JSON.stringify({ status: newStatus })
-      }
-    );
-
-    if(!res.ok) throw new Error("Supabase update failed");
-
-    // ✅ 2. SEND EMAIL USING EMAILJS (NEW PART)
-
-    if(newStatus === "verified") {
-
-      emailjs.send("service_r7wuzur", "template_sikd1np", {
-        name: name,
-        email: email
-      })
-      .then(() => console.log("Verified email sent"))
-      .catch(err => console.log(err));
-
-    }
-
-    // ✅ 3. SUCCESS MESSAGE
-    alert("Status updated and email sent");
-
-    await loadStudents();
-    closeModalDirect();
-
-  } catch(err) {
-    alert("Error: " + err.message);
-  }
-}
-
 // ── Stats ────────────────────────────────────────────────────
 function updateStats() {
   const total    = allStudents.length;
@@ -467,7 +419,7 @@ function renderTable() {
       </td>
       <td style="font-weight:700;color:#28a745">₹${Number(s.amount||0).toLocaleString()}</td>
       <td>
-        <span class="badge ${s.status || 'pending'}">
+        <span class="badge ${s.status ? s.status : 'pending'}">
           ${s.status === "verified" ? "✅ Verified" :
             s.status === "rejected" ? "❌ Rejected" : "⏳ Pending"}
         </span>
@@ -536,49 +488,40 @@ function viewScreenshot(url) {
 }
 
 // ── Update Status + Send Email ───────────────────────────────
-async function updateStatus(id, email, name, newStatus) {
-  const action = newStatus === "verified" ? "verify" : "reject";
-  if(!confirm(`Are you sure you want to ${action} registration for ${name}?`)) return;
+async function loadStudents() {
+
+  document.getElementById("loadingDiv").style.display = "block";
 
   try {
-    // 1. Update Supabase
+
     const res = await fetch(
-      `${SUPABASE_URL}/rest/v1/registrations?id=eq.${id}`,
-  {
-    method:  "PATCH",
+      `${SUPABASE_URL}/rest/v1/registrations?select=*`,
+      {
         headers: {
-          "apikey":        SUPABASE_KEY,
-          "Authorization": `Bearer ${SUPABASE_KEY}`,
-          "Content-Type":  "application/json",
-          "Prefer":        "return=minimal"
-        },
-        body: JSON.stringify({ status: newStatus })
+          "apikey": SUPABASE_KEY,
+          "Authorization": `Bearer ${SUPABASE_KEY}`
+        }
       }
     );
 
-    if(!res.ok) throw new Error("Supabase update failed");
+    const data = await res.json();
 
-    // 2. Send email via backend
-    await fetch(`${BACKEND}/send-status-email`, {
-      method:  "POST",
-      headers: { "Content-Type": "application/json" },
-      body:    JSON.stringify({ id, email, name, status: newStatus })
-    });
+    allStudents = data.reverse();
 
-    showToast(
-      newStatus === "verified"
-        ? `✅ ${name} verified! Confirmation email sent.`
-        : `❌ ${name} rejected.`,
-      newStatus === "verified" ? "green" : "red"
-    );
+    updateStats();
+    renderTable();
 
-    // Reload data
-    await loadStudents();
-    closeModalDirect();
+    document.getElementById("lastRefresh").innerText =
+      "Last updated: " + new Date().toLocaleTimeString();
 
-  } catch(err) {
-    showToast("❌ Error: " + err.message, "red");
+  } catch (err) {
+
+    console.log(err);
+    showToast("Failed to load students", "red");
+
   }
+
+  document.getElementById("loadingDiv").style.display = "none";
 }
 
 // ── Modal ────────────────────────────────────────────────────
