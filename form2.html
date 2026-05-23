@@ -279,6 +279,7 @@
         type="file"
         id="paymentScreenshot"
         accept="image/*"
+        capture="environment"
       />
 
     </div>
@@ -444,6 +445,11 @@ console.log("Submit started");
     alert("Please upload payment screenshot");
     return;
   }
+
+  if (screenshot.size > 2000000) {
+  alert("Image size must be below 2MB");
+  return;
+}
 
   const formData = new FormData();
 
