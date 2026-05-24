@@ -277,30 +277,28 @@
       <input
         type="file"
         id="paymentScreenshot"
-        accept="image/*"
-        capture="environment"
       />
 
     </div>
 
     <!-- BUTTONS -->
-    <div class="btn-row">
+   <div class="btn-row">
 
-      <button
-        class="btn btn-outline"
-        onclick="goTo(3)"
-      >
-        ← Back
-      </button>
+  <button
+    class="btn btn-outline"
+    onclick="goToStep(3)">
+    ← Back
+  </button>
 
-      <button
-  type="button"
-  class="btn btn-success"
-  onclick="submitForm()"
->
-      
-        ✅ Submit Registration
-      </button>
+  <button
+    type="button"
+    id="submitBtn"
+    class="btn btn-success"
+    onclick="submitForm()">
+    Submit Registration
+  </button>
+
+</div>
 
     </div>
 
@@ -436,93 +434,67 @@ function goToPayment() {
 
 async function submitForm() {
 
-console.log("Submit started");
-document.querySelector(".btn-success").disabled = true;
-  
-const screenshot =
-    document.getElementById("paymentScreenshot").files[0];
+  console.log("Submit started");
 
-  if (!screenshot) {
-    alert("Please upload payment screenshot");
-    return;
-  }
+  const submitBtn = document.getElementById("submitBtn");
 
-  if (screenshot.size > 2000000) {
-  alert("Image size must be below 2MB");
-  return;
-}
-
-  const formData = new FormData();
-
-  formData.append("name", document.getElementById("name").value);
-  formData.append("dob", document.getElementById("dob").value);
-  formData.append("email", document.getElementById("email").value);
-  formData.append("phone", document.getElementById("phone").value);
-  formData.append("whatsapp", document.getElementById("whatsapp").value);
-  formData.append("linkedin", document.getElementById("linkedin").value);
-
-  formData.append("college", document.getElementById("college").value);
-  formData.append("department", document.getElementById("department").value);
-  formData.append("year", document.getElementById("year").value);
-  formData.append("cgpa", document.getElementById("cgpa").value);
-  formData.append("domain", document.getElementById("domain").value);
-  formData.append("skills", document.getElementById("skills").value);
-  formData.append("referral", document.getElementById("referral").value);
-
-  formData.append("duration", selectedDuration);
-  formData.append("amount", selectedAmount);
-  formData.append("startDate", document.getElementById("startDate").value);
-  formData.append("message", document.getElementById("message").value);
-
-  formData.append("paymentScreenshot", screenshot);
+  submitBtn.disabled = true;
+  submitBtn.innerText = "Submitting...";
 
   try {
 
-   console.log("Sending request...")
-   const res = await fetch(`${BACKEND_URL}/register`, {
-      method: "POST",
-      body: formData
-    });
+    const formData = new FormData();
 
-    const result = await res.json();
+    formData.append("name", document.getElementById("name").value);
+    formData.append("email", document.getElementById("email").value);
+    formData.append("phone", document.getElementById("phone").value);
 
-    if (result.success) {
+    const screenshot =
+      document.getElementById("paymentScreenshot").files[0];
 
-      document.querySelectorAll(".step")
-        .forEach(s => s.style.display = "none");
+    if (screenshot) {
+      formData.append("paymentScreenshot", screenshot);
+    }
 
-      document.querySelector(".progress-bar")
-        .style.display = "none";
+    console.log("Sending request...");
 
-      document.getElementById("successBox")
-        .style.display = "block";
+    const response = await fetch(
+      "https://internship-registration-portal.onrender.com",
+      {
+        method: "POST",
+        body: formData
+      }
+    );
 
-      document.getElementById("successName").innerText =
-        document.getElementById("name").value;
+    const data = await response.json();
 
-      document.getElementById("successEmail").innerText =
-        document.getElementById("email").value;
+    console.log(data);
 
-      document.getElementById("successDuration").innerText =
-        selectedDuration;
+    // ==========================
+    // SUCCESS
+    // ==========================
+    if (data.success) {
 
-      document.getElementById("successAmt").innerText =
-        selectedAmount;
+      alert("Registration Successful ✅");
 
-      window.scrollTo(0, 0);
+      window.location.reload();
 
     } else {
 
-      alert(result.message || "Registration failed");
+      alert(data.message);
 
     }
 
-  } catch (err) {
+  } catch (error) {
 
-    console.log(err);
-    alert("Server error");
+    console.log("SUBMIT ERROR:", error);
+
+    alert("Server Error");
 
   }
+
+  submitBtn.disabled = false;
+  submitBtn.innerText = "Submit Registration";
 }
 </script>
 
