@@ -5,10 +5,10 @@ const { createClient } = require("@supabase/supabase-js");
 const cors    = require("cors");
 const multer  = require("multer");
 const path    = require("path");
-const { Resend } = require("resend");
+//const { Resend } = require("resend");
 
 const app    = express();
-const resend = new Resend(process.env.RESEND_API_KEY);
+//const resend = new Resend(process.env.RESEND_API_KEY);
 const upload = multer({ storage: multer.memoryStorage() });
 
 app.use(cors());
@@ -29,24 +29,6 @@ app.post("/register", upload.single("paymentScreenshot"), async (req, res) => {
 
   console.log("BODY:", req.body);
   console.log("FILE:", req.file ? req.file.originalname : "No file");
-
-const { name, email, phone } = req.body;
-
-if (!name || !email || !phone) {
-  return res.json({
-    success: false,
-    message: "All fields required"
-  });
-}
-
-const phoneRegex = /^[0-9]{10}$/;
-
-if (!phoneRegex.test(phone)) {
-  return res.json({
-    success: false,
-    message: "Phone must be 10 digits"
-  });
-}
 
   if (!req.file) {
     return res.json({ success: false, message: "No screenshot received" });
@@ -100,7 +82,7 @@ if (!phoneRegex.test(phone)) {
     }
 
     // 3. Send PENDING email to student
-    await resend.emails.send({
+    await transporter.sendMail({
       from:    "onboarding@resend.dev",
       to:      req.body.email,
       subject: "⏳ Registration Received — Payment Pending Verification",
@@ -162,7 +144,7 @@ app.post("/send-status-email", async (req, res) => {
     if (status === "verified") {
 
       // ── Send CONFIRMED email ──────────────────────────────
-      await resend.emails.send({
+      await transporter.sendMail({
         from:    "onboarding@resend.dev",
         to:      email,
         subject: "🎉 Internship Registration Confirmed!",
@@ -195,9 +177,9 @@ app.post("/send-status-email", async (req, res) => {
     } else if (status === "rejected") {
 
       // ── Send REJECTED email ───────────────────────────────
-      await resend.emails.send({
+      await transporter.sendMail({
         from:    "onboarding@resend.dev",
-        to:      formData.email,
+        to:      email,
         subject: "⚠️ Payment Verification Issue — Action Required",
         html: `
           <div style="font-family:'Segoe UI',Arial,sans-serif;max-width:600px;margin:auto;border:1px solid #e0e0e0;border-radius:14px;overflow:hidden">
@@ -250,6 +232,6 @@ app.get("/admin", (req, res) => {
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
   console.log("═══════════════════════════════════════");
-  console.log("Server running on port" + PORT);
+  console.log("Server running on port", PORT);
   console.log("═══════════════════════════════════════");
 });
