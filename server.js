@@ -5,6 +5,7 @@ const { createClient } = require("@supabase/supabase-js");
 const cors    = require("cors");
 const multer  = require("multer");
 const path    = require("path");
+const nodemailer = require("nodemailer");
 //const { Resend } = require("resend");
 
 const app    = express();
