@@ -1,0 +1,27 @@
+@"
+# Environment Variables
+.env
+.env.local
+backend/.env
+
+# Node Modules
+node_modules/
+package-lock.json
+
+# OS Files
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
+
+# Logs
+*.log
+
+# Sensitive
+*.key
+*.pem
+google-credentials.json
+qr.jpeg
+"@ | Out-File -FilePath .gitignore -Encoding utf8
