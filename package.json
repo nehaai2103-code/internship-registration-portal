@@ -2,9 +2,9 @@
   "name": "internshipregistrationproject",
   "version": "1.0.0",
   "description": "",
-  "main": "server2.js",
+  "main": "server.js",
   "scripts": {
-    "start": "node server2.js"
+    "start": "node server.js"
   },
   "keywords": [],
   "author": "",
@@ -16,7 +16,7 @@
     "express": "^5.2.1",
     "mongoose": "^9.6.2",
     "multer": "^2.1.1",
-    "nodemailer": "^8.0.7"
+    "nodemailer": "^8.0.8"
   },
   "devDependencies": {
     "nodemon": "^3.1.14"
