@@ -1,5 +1,5 @@
 require("dotenv").config();
-
+const path = require("path")
 const express = require("express");
 const cors = require("cors");
 const multer = require("multer");
@@ -37,9 +37,15 @@ const transporter = nodemailer.createTransport({
 // HOME ROUTE
 // ======================================
 app.get("/", (req, res) => {
-  res.send("Server Running Successfully");
+  res.sendFile(path.join(__dirname, "form2.html"));
 });
 
+// ======================================
+// ADMIN ROUTE
+// ======================================
+app.get("/admin", (req, res) => {
+  res.sendFile(path.join(__dirname, "admin.html"));
+});
 // ======================================
 // REGISTER API
 // ======================================
