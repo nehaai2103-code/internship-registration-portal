@@ -6,6 +6,14 @@ const cors    = require("cors");
 const multer  = require("multer");
 const path    = require("path");
 const nodemailer = require("nodemailer");
+
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: process.env.GMAIL_USER,
+    pass: process.env.GMAIL_PASS
+  }
+});
 //const { Resend } = require("resend");
 
 const app    = express();
