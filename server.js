@@ -8,7 +8,7 @@ const nodemailer = require("nodemailer");
 const app = express();
 
 app.use(express.json());
-
+app.use(express.urlencoded({ extended: true }));
 app.use(cors({
   origin: "*"
 }));
@@ -105,6 +105,13 @@ app.post("/register", upload.single("paymentScreenshot"), async (req, res) => {
       `
     });
 
+// 👇 THIS PART (bottom of file)
+app.use((req, res) => {
+  res.status(404).json({
+    success: false,
+    message: "Route not found"
+  });
+});
     // ==================================
     // RESPONSE
     // ==================================
