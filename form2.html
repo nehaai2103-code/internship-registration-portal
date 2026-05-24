@@ -288,11 +288,22 @@
   </div>
 </div>
 
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <script>
+  // Initialize EmailJS - REPLACE WITH YOUR ACTUAL PUBLIC KEY
+  (function() {
+    emailjs.init("J8k7TQ03F2wgWZyoV"); // Get from https://dashboard.emailjs.com
+  })();
+
   const BACKEND_URL = "/register";
 
   let selectedDuration = "";
   let selectedAmount   = 0;
+
+  // EmailJS Configuration (2 Templates)
+  const EMAILJS_SERVICE_ID = "YOUR_SERVICE_ID";      // Replace with your Service ID
+  const EMAILJS_TEMPLATE_CONFIRMATION = "YOUR_CONFIRMATION_TEMPLATE_ID"; // Template 1
+  const EMAILJS_TEMPLATE_DECISION = "YOUR_DECISION_TEMPLATE_ID";         // Template 2 (handles both)
 
   // ── Navigation ───────────────────────────────────────────────
   function goTo(step) {
@@ -349,6 +360,27 @@
     document.getElementById("payDuration").innerText = dur;
   }
 
+  // ── Send Confirmation Email via EmailJS (Template 1) ─────────
+  async function sendConfirmationEmail(userData) {
+    const templateParams = {
+      to_email: userData.email,
+      to_name: userData.name,
+      internship_type: userData.domain,
+      registration_id: userData.id || Date.now(),
+      amount: selectedAmount,
+      duration: selectedDuration
+    };
+    
+    try {
+      await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_CONFIRMATION, templateParams);
+      console.log("Confirmation email sent to:", userData.email);
+      return true;
+    } catch (error) {
+      console.error("EmailJS error:", error);
+      return false;
+    }
+  }
+
   // ── Submit Form ──────────────────────────────────────────────
   async function submitForm() {
     const screenshot = document.getElementById("paymentScreenshot").files[0];
@@ -384,6 +416,15 @@
       const result   = await response.json();
 
       if (result.success) {
+        // Send confirmation email via EmailJS
+        const userData = {
+          name: document.getElementById("name").value,
+          email: document.getElementById("email").value,
+          domain: document.getElementById("domain").value,
+          id: result.registrationId
+        };
+        await sendConfirmationEmail(userData);
+        
         document.querySelectorAll(".step").forEach(s => s.style.display = "none");
         document.querySelectorAll(".step-tab").forEach(t => t.classList.add("done"));
         document.getElementById("successBox").style.display    = "block";
@@ -404,5 +445,14 @@
     }
   }
 </script>
+
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+<script>
+  // Initialize EmailJS (replace with your public key)
+  (function() {
+    emailjs.init("J8k7TQ03F2wgWZyoV"); // Get from https://dashboard.emailjs.com
+  })();
+</script>
+
 </body>
 </html>

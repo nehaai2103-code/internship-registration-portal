@@ -94,13 +94,17 @@
       cursor:pointer;
     }
     .refresh-btn:hover { background:#5568d4; }
+    .excel-btn {
+      background:#28a745; color:white;
+    }
+    .excel-btn:hover { background:#218838; }
 
     /* ── Table ── */
     .table-wrap {
       background:white; border-radius:14px;
-      box-shadow:0 2px 12px rgba(0,0,0,.06); overflow:hidden;
+      box-shadow:0 2px 12px rgba(0,0,0,.06); overflow-x:auto;
     }
-    table { width:100%; border-collapse:collapse; font-size:14px; }
+    table { width:100%; border-collapse:collapse; font-size:14px; min-width:800px; }
     thead { background:linear-gradient(135deg,#667eea,#764ba2); color:white; }
     thead th { padding:14px 16px; text-align:left; font-weight:600; font-size:13px; }
     tbody tr { border-bottom:1px solid #f0f0f0; transition:background .15s; }
@@ -108,28 +112,71 @@
     tbody td { padding:14px 16px; color:#333; vertical-align:middle; }
     .no-data { text-align:center; padding:50px; color:#aaa; font-size:15px; }
 
-    /* ── Status Badges ── */
+    /* ── Status Badges (FIXED COLORS) ── */
     .badge {
-      display:inline-block; padding:4px 12px; border-radius:999px;
+      display:inline-block; padding:6px 14px; border-radius:20px;
       font-size:12px; font-weight:700; letter-spacing:.3px;
+      text-transform:uppercase;
     }
-    .badge.pending  { background:#fff8e1; color:#b45309; border:1px solid #fcd34d; }
-    .badge.verified { background:#dcfce7; color:#166534; border:1px solid #86efac; }
-    .badge.rejected { background:#fee2e2; color:#991b1b; border:1px solid #fca5a5; }
+    .badge.pending { 
+      background:#fef3c7; 
+      color:#92400e; 
+      border:1px solid #fbbf24; 
+    }
+    .badge.verified { 
+      background:#d1fae5; 
+      color:#065f46; 
+      border:1px solid #34d399; 
+    }
+    .badge.approved { 
+      background:#d1fae5; 
+      color:#065f46; 
+      border:1px solid #34d399; 
+    }
+    .badge.rejected { 
+      background:#fee2e2; 
+      color:#991b1b; 
+      border:1px solid #f87171; 
+    }
 
-    /* ── Action Buttons ── */
+    /* ── Action Buttons (FIXED COLORS) ── */
     .action-btn {
       padding:6px 12px; border:none; border-radius:6px;
       font-size:12px; font-weight:600; cursor:pointer; margin:2px;
+      transition: all 0.2s;
     }
-    .btn-verify   { background:#28a745; color:white; }
-    .btn-verify:hover { background:#218838; }
-    .btn-reject   { background:#dc3545; color:white; }
-    .btn-reject:hover { background:#c82333; }
-    .btn-view     { background:#667eea; color:white; }
-    .btn-view:hover { background:#5568d4; }
-    .btn-screenshot { background:#f59e0b; color:white; }
-    .btn-screenshot:hover { background:#d97706; }
+    .btn-verify { 
+      background:#10b981; 
+      color:white; 
+    }
+    .btn-verify:hover { 
+      background:#059669; 
+      transform:translateY(-1px);
+    }
+    .btn-reject { 
+      background:#ef4444; 
+      color:white; 
+    }
+    .btn-reject:hover { 
+      background:#dc2626; 
+      transform:translateY(-1px);
+    }
+    .btn-view { 
+      background:#3b82f6; 
+      color:white; 
+    }
+    .btn-view:hover { 
+      background:#2563eb; 
+      transform:translateY(-1px);
+    }
+    .btn-screenshot { 
+      background:#f59e0b; 
+      color:white; 
+    }
+    .btn-screenshot:hover { 
+      background:#d97706; 
+      transform:translateY(-1px);
+    }
 
     /* ── Modal ── */
     .modal-overlay {
@@ -155,6 +202,7 @@
       width:30px; height:30px; border-radius:50%; cursor:pointer;
       font-size:18px; display:flex; align-items:center; justify-content:center;
     }
+    .modal-close:hover { background:rgba(255,255,255,.3); }
     .modal-body { padding:24px; }
     .detail-row {
       display:flex; border-bottom:1px solid #f0f0f0; padding:10px 0;
@@ -178,8 +226,8 @@
       animation:slideUp .3s ease;
     }
     .toast.show { display:block; }
-    .toast.green { background:#28a745; }
-    .toast.red   { background:#dc3545; }
+    .toast.green { background:#10b981; }
+    .toast.red   { background:#ef4444; }
     @keyframes slideUp { from{opacity:0;transform:translateY(20px)} to{opacity:1;transform:none} }
 
     /* ── Loading ── */
@@ -196,14 +244,6 @@
     @media(max-width:768px) {
       .content { padding:16px; }
       .stats { grid-template-columns:1fr 1fr; }
-      .topbar { padding:14px 16px; }
-      thead th:nth-child(3),
-      thead th:nth-child(4),
-      tbody td:nth-child(3),
-      tbody td:nth-child(4) { display:none; }
-    }
-    @media(max-width:480px) {
-      .stats { grid-template-columns:1fr; }
     }
   </style>
 </head>
@@ -260,21 +300,21 @@
 
     <!-- Toolbar -->
     <div class="toolbar">
-      <input type="text" id="searchBox" placeholder="🔍  Search by name, email, phone..."
-             oninput="renderTable()"/>
+      <input type="text" id="searchBox" placeholder="🔍 Search by name, email, phone..." oninput="renderTable()"/>
       <select id="filterStatus" onchange="renderTable()">
-        <option value="all">All Status</option>
-        <option value="pending">Pending</option>
-        <option value="verified">Verified</option>
-        <option value="rejected">Rejected</option>
+        <option value="all">📊 All Status</option>
+        <option value="pending">⏳ Pending</option>
+        <option value="verified">✅ Verified</option>
+        <option value="rejected">❌ Rejected</option>
       </select>
       <select id="filterDuration" onchange="renderTable()">
-        <option value="all">All Durations</option>
+        <option value="all">📅 All Durations</option>
         <option value="1 Month">1 Month</option>
         <option value="2 Months">2 Months</option>
         <option value="3 Months">3 Months</option>
       </select>
       <button class="refresh-btn" onclick="loadStudents()">🔄 Refresh</button>
+      <button class="refresh-btn excel-btn" onclick="downloadExcel()">📊 Download Excel</button>
     </div>
 
     <!-- Table -->
@@ -319,18 +359,26 @@
 <!-- Toast -->
 <div class="toast" id="toast"></div>
 
+<script src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <script>
 // ═══════════════════════════════════════════════════════════════
-//  ⚙️  CONFIG — Change these 3 values
+//  ⚙️  CONFIG — Change these values
 // ═══════════════════════════════════════════════════════════════
-const SUPABASE_URL = "https://wydvkbznrgjykdltyjtz.supabase.co";   // ← your Supabase URL
-const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind5ZHZrYnpucmdqeWtkbHR5anR6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg4MjQzOTEsImV4cCI6MjA5NDQwMDM5MX0.nZaKtxOw7CPq7rlf5zIFOCp6Quaf3n4mq2qwUgXNvtE";                 // ← your Supabase anon key
-const BACKEND      = "https://internship-registration-portal.onrender.com";              // ← your backend URL
+const SUPABASE_URL = "https://wydvkbznrgjykdltyjtz.supabase.co";
+const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Ind5ZHZrYnpucmdqeWtkbHR5anR6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3Nzg4MjQzOTEsImV4cCI6MjA5NDQwMDM5MX0.nZaKtxOw7CPq7rlf5zIFOCp6Quaf3n4mq2qwUgXNvtE";
+const BACKEND      =  "https://internship-registration-portal.onrender.com";
 
-// Admin credentials (change these!)
+// Admin credentials
 const ADMIN_USER = "admin";
 const ADMIN_PASS = "admin123";
-// ═══════════════════════════════════════════════════════════════
+
+// EmailJS Configuration
+(function() {
+  emailjs.init("YOUR_EMAILJS_PUBLIC_KEY"); // Replace with your EmailJS public key
+})();
+
+const EMAILJS_SERVICE_ID = "YOUR_SERVICE_ID";
+const EMAILJS_TEMPLATE_DECISION = "YOUR_DECISION_TEMPLATE_ID";
 
 let allStudents = [];
 
@@ -428,44 +476,51 @@ function renderTable() {
   document.getElementById("mainTable").style.display = "table";
   document.getElementById("noData").style.display    = "none";
 
-  tbody.innerHTML = filtered.map((s, i) => `
-    <tr>
-      <td style="color:#aaa;font-size:12px">${i+1}</td>
-      <td>
-        <div style="font-weight:700;color:#1a1a2e">${s.name || "—"}</div>
-        <div style="font-size:12px;color:#888">${s.email || ""}</div>
-        <div style="font-size:12px;color:#888">${s.phone || ""}</div>
-      </td>
-      <td>
-        <div style="font-size:13px">${s.college || "—"}</div>
-        <div style="font-size:12px;color:#888">${s.department || ""} · ${s.year || ""}</div>
-      </td>
-      <td style="font-size:13px">${s.domain || "—"}</td>
-      <td>
-        <span style="font-weight:700;color:#667eea">${s.duration || "—"}</span>
-      </td>
-      <td style="font-weight:700;color:#28a745">₹${Number(s.amount||0).toLocaleString()}</td>
-      <td>
-        <span class="badge ${s.status || 'pending'}">
-          ${s.status === "verified" ? "✅ Verified" :
-            s.status === "rejected" ? "❌ Rejected" : "⏳ Pending"}
-        </span>
-      </td>
-      <td>
-        <button class="action-btn btn-view"
-          onclick="viewStudent('${s.id}')">👁 View</button>
-        ${s.screenshot ?
-          `<button class="action-btn btn-screenshot"
-            onclick="viewScreenshot('${s.screenshot}')">📸 SS</button>` : ""}
-        ${s.status !== "verified" ?
-          `<button class="action-btn btn-verify"
-            onclick="updateStatus('${s.id}','${s.email}','${s.name}','verified')">✅ Verify</button>` : ""}
-        ${s.status !== "rejected" ?
-          `<button class="action-btn btn-reject"
-            onclick="updateStatus('${s.id}','${s.email}','${s.name}','rejected')">❌ Reject</button>` : ""}
-      </td>
-    </tr>
-  `).join("");
+  tbody.innerHTML = filtered.map((s, i) => {
+    let statusText = "";
+    let statusClass = "";
+    if(s.status === "verified") {
+      statusText = "✅ Verified";
+      statusClass = "verified";
+    } else if(s.status === "rejected") {
+      statusText = "❌ Rejected";
+      statusClass = "rejected";
+    } else {
+      statusText = "⏳ Pending";
+      statusClass = "pending";
+    }
+    
+    return `
+      <tr>
+        <td style="color:#aaa;font-size:12px">${i+1}</td>
+        <td>
+          <div style="font-weight:700;color:#1a1a2e">${s.name || "—"}</div>
+          <div style="font-size:12px;color:#888">${s.email || ""}</div>
+          <div style="font-size:12px;color:#888">${s.phone || ""}</div>
+        </td>
+        <td>
+          <div style="font-size:13px">${s.college || "—"}</div>
+          <div style="font-size:12px;color:#888">${s.department || ""} · ${s.year || ""}</div>
+        </td>
+        <td style="font-size:13px">${s.domain || "—"}</td>
+        <td>
+          <span style="font-weight:700;color:#667eea">${s.duration || "—"}</span>
+        </td>
+        <td style="font-weight:700;color:#10b981">₹${Number(s.amount||0).toLocaleString()}</td>
+        <td>
+          <span class="badge ${statusClass}">
+            ${statusText}
+          </span>
+        </td>
+        <td>
+          <button class="action-btn btn-view" onclick="viewStudent('${s.id}')">👁 View</button>
+          ${s.screenshot ? `<button class="action-btn btn-screenshot" onclick="viewScreenshot('${s.screenshot}')">📸 SS</button>` : ""}
+          ${s.status !== "verified" ? `<button class="action-btn btn-verify" onclick="updateStatus('${s.id}','${s.email}','${s.name}','verified')">✅ Verify</button>` : ""}
+          ${s.status !== "rejected" ? `<button class="action-btn btn-reject" onclick="updateStatus('${s.id}','${s.email}','${s.name}','rejected')">❌ Reject</button>` : ""}
+        </td>
+      </tr>
+    `;
+  }).join("");
 }
 
 // ── View Student Detail ──────────────────────────────────────
@@ -491,8 +546,8 @@ function viewStudent(id) {
     ["Amount",        "₹" + Number(s.amount||0).toLocaleString()],
     ["Start Date",    s.startDate || "—"],
     ["Message",       s.message || "—"],
-    ["Status",        `<span class="badge ${s.status}">${s.status}</span>`],
-    ["Registered At", s.created_at ? new Date(s.created_at).toLocaleString() : "—"],
+    ["Status",        `<span class="badge ${s.status === "verified" ? "verified" : s.status === "rejected" ? "rejected" : "pending"}">${s.status}</span>`],
+    ["Registered At", s.created_at? new Date(s.created_at).toLocaleString() : "—"],
   ];
 
   document.getElementById("modalTitle").innerText = "📋 " + s.name;
@@ -514,7 +569,7 @@ function viewScreenshot(url) {
   window.open(url, "_blank");
 }
 
-// ── Update Status + Send Email ───────────────────────────────
+// ── Update Status + Send Email via EmailJS ───────────────────
 async function updateStatus(id, email, name, newStatus) {
   const action = newStatus === "verified" ? "verify" : "reject";
   if(!confirm(`Are you sure you want to ${action} registration for ${name}?`)) return;
@@ -536,12 +591,25 @@ async function updateStatus(id, email, name, newStatus) {
 
     if(!res.ok) throw new Error("Supabase update failed");
 
-    // 2. Send email via backend
-    await fetch(`${BACKEND}/send-status-email`, {
-      method:  "POST",
-      headers: { "Content-Type": "application/json" },
-      body:    JSON.stringify({ id, email, name, status: newStatus })
-    });
+    // 2. Send email via EmailJS (Template 2 - handles both approval/rejection)
+    const student = allStudents.find(s => s.id === id);
+    const templateParams = {
+      to_email: email,
+      to_name: name,
+      decision_type: newStatus,
+      internship_type: student?.domain || "Internship",
+      notes: newStatus === "verified" ? 
+        "✅ Your payment has been verified successfully! Welcome aboard!" : 
+        "❌ Your payment could not be verified. Please contact support."
+    };
+    
+    try {
+      await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_DECISION, templateParams);
+      console.log(`📧 ${newStatus} email sent to ${email}`);
+    } catch(emailErr) {
+      console.error("EmailJS error:", emailErr);
+      // Don't fail the status update if email fails
+    }
 
     showToast(
       newStatus === "verified"
@@ -557,6 +625,53 @@ async function updateStatus(id, email, name, newStatus) {
   } catch(err) {
     showToast("❌ Error: " + err.message, "red");
   }
+}
+
+// ── Download Excel ───────────────────────────────────────────
+function downloadExcel() {
+  if (allStudents.length === 0) {
+    showToast("No data to export", "red");
+    return;
+  }
+  
+  const excelData = allStudents.map(s => ({
+    'ID': s.id,
+    'Full Name': s.name,
+    'Email': s.email,
+    'Phone': s.phone,
+    'WhatsApp': s.whatsapp || '',
+    'College': s.college,
+    'Department': s.department,
+    'Year': s.year,
+    'Domain': s.domain,
+    'Duration': s.duration,
+    'Amount': s.amount,
+    'Status': s.status,
+    'Registered At': s.created_at ? new Date(s.created_at).toLocaleString() : ''
+  }));
+  
+  const headers = Object.keys(excelData[0]);
+  const csvRows = [headers.join(',')];
+  
+  for (const row of excelData) {
+    const values = headers.map(header => {
+      const value = row[header] || '';
+      return `"${String(value).replace(/"/g, '""')}"`;
+    });
+    csvRows.push(values.join(','));
+  }
+  
+  const blob = new Blob([csvRows.join('\n')], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `internship_registrations_${new Date().toISOString().split('T')[0]}.csv`;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  
+  showToast(`✅ Exported ${allStudents.length} records`, "green");
 }
 
 // ── Modal ────────────────────────────────────────────────────
@@ -577,3 +692,47 @@ function showToast(msg, type="") {
 </script>
 </body>
 </html>
+```
+
+Key Color Fixes Made:
+
+✅ Status Badges (Now Colored):
+
+· Pending: Yellow background (#fef3c7) with amber text (#92400e)
+· Verified: Green background (#d1fae5) with dark green text (#065f46)
+· Rejected: Red background (#fee2e2) with dark red text (#991b1b)
+
+✅ Action Buttons (Now Colored):
+
+· View: Blue (#3b82f6)
+· Verify: Green (#10b981)
+· Reject: Red (#ef4444)
+· Screenshot: Orange (#f59e0b)
+
+✅ Excel Download Button:
+
+· Green background (#28a745)
+· Hover effect
+
+✅ Toast Messages:
+
+· Success: Green background
+· Error: Red background
+
+Replace these values in the code:
+
+```javascript
+// EmailJS Configuration (Line ~380)
+emailjs.init("YOUR_EMAILJS_PUBLIC_KEY"); // Your actual public key
+
+const EMAILJS_SERVICE_ID = "YOUR_SERVICE_ID"; // Your service ID
+const EMAILJS_TEMPLATE_DECISION = "YOUR_DECISION_TEMPLATE_ID"; // Your template ID
+```
+
+To Run:
+
+```bash
+# Save the file as admin.html
+# Open in browser
+# Login: admin / admin123
+```
