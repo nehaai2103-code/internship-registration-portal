@@ -1,39 +1,40 @@
 require("dotenv").config();
 
-const express = require("express");
+const express    = require("express");
 const { createClient } = require("@supabase/supabase-js");
-const cors    = require("cors");
-const multer  = require("multer");
-const path    = require("path");
+const cors       = require("cors");
+const multer     = require("multer");
+const path       = require("path");
 const nodemailer = require("nodemailer");
 
-const transporter = nodemailer.createTransport({
-  service: "gmail",
-  auth: {
-    user: process.env.GMAIL_USER,
-    pass: process.env.GMAIL_PASS
-  }
-});
-//const { Resend } = require("resend");
-
 const app    = express();
-//const resend = new Resend(process.env.RESEND_API_KEY);
 const upload = multer({ storage: multer.memoryStorage() });
 
-app.use(cors());
+app.use(cors({ origin: "*" }));
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// ── Supabase ──────────────────────────────────────────────────
+// Supabase
 const supabase = createClient(
   process.env.SUPABASE_URL,
   process.env.SUPABASE_KEY
 );
 
-// ═══════════════════════════════════════════════════════════════
-//  ROUTE 1 — POST /register
-//  Called by index.html (student registration form)
-// ═══════════════════════════════════════════════════════════════
+// Nodemailer
+const transporter = nodemailer.createTransport({
+  service: "gmail",
+  auth: {
+    user: process.env.GMAIL_USER,
+    pass: process.env.GMAIL_PASS
+  },
+  tls: {
+    rejectUnauthorized: false
+  }
+});
+
+// ═══════════════════════════════════════════════════
+// ROUTE 1 — POST /register
+// ═══════════════════════════════════════════════════
 app.post("/register", upload.single("paymentScreenshot"), async (req, res) => {
 
   console.log("BODY:", req.body);
@@ -60,7 +61,7 @@ app.post("/register", upload.single("paymentScreenshot"), async (req, res) => {
     const screenshotUrl =
       `${process.env.SUPABASE_URL}/storage/v1/object/public/payment-screenshots/${fileName}`;
 
-    // 2. Save registration to Supabase DB
+    // 2. Save to Supabase DB
     const { error: dbError } = await supabase
       .from("registrations")
       .insert([{
@@ -90,143 +91,138 @@ app.post("/register", upload.single("paymentScreenshot"), async (req, res) => {
       return res.json({ success: false, message: dbError.message });
     }
 
-    // 3. Send PENDING email to student
-    await transporter.sendMail({
-      from:    "onboarding@resend.dev",
+    // 3. Send response IMMEDIATELY — no timeout!
+    res.json({ success: true, message: "Registration successful" });
+
+    // 4. Send email AFTER response — runs in background
+    transporter.sendMail({
+      from:    `"Internship Team" <${process.env.GMAIL_USER}>`,
       to:      req.body.email,
-      subject: "⏳ Registration Received — Payment Pending Verification",
+      subject: "Registration Received - Payment Pending Verification",
       html: `
         <div style="font-family:'Segoe UI',Arial,sans-serif;max-width:600px;margin:auto;border:1px solid #e0e0e0;border-radius:14px;overflow:hidden">
           <div style="background:linear-gradient(135deg,#667eea,#3d1368);color:white;padding:32px;text-align:center">
-            <div style="font-size:44px;margin-bottom:10px">⏳</div>
             <h1 style="font-size:22px;margin:0 0 6px">Registration Received!</h1>
             <p style="opacity:.8;font-size:14px;margin:0">Payment verification in progress</p>
           </div>
           <div style="padding:30px">
             <p style="font-size:15px;color:#333">Dear <strong>${req.body.name}</strong>,</p>
             <p style="font-size:14px;color:#555;line-height:1.7;margin:12px 0 22px">
-              Thank you for registering! We have received your registration and payment screenshot.
-              Our team is currently verifying your payment. You will receive a confirmation email once verified.
+              Thank you for registering! We received your payment screenshot and are verifying it now.
             </p>
-            <div style="background:#f8f9ff;border:1px solid #dde5ff;border-radius:10px;padding:18px;margin-bottom:22px">
-              <table style="width:100%;font-size:14px;border-collapse:collapse">
-                <tr><td style="padding:8px 0;color:#888;width:40%">Name</td>      <td style="font-weight:600;color:#1a1a2e">${req.body.name}</td></tr>
-                <tr><td style="padding:8px 0;color:#888">Email</td>               <td style="font-weight:600;color:#1a1a2e">${req.body.email}</td></tr>
-                <tr><td style="padding:8px 0;color:#888">Domain</td>              <td style="font-weight:600;color:#1a1a2e">${req.body.domain}</td></tr>
-                <tr><td style="padding:8px 0;color:#888">Duration</td>            <td style="font-weight:600;color:#667eea">${req.body.duration}</td></tr>
-                <tr><td style="padding:8px 0;color:#888">Amount</td>              <td style="font-weight:700;color:#28a745;font-size:15px">₹${req.body.amount}</td></tr>
-                <tr><td style="padding:8px 0;color:#888">Status</td>              <td><span style="background:#fff8e1;color:#92400e;padding:3px 10px;border-radius:999px;font-size:12px;font-weight:600">⏳ Pending Verification</span></td></tr>
-              </table>
-            </div>
-            <div style="background:#fffbeb;border:1px solid #fcd34d;border-radius:8px;padding:12px 16px;font-size:13px;color:#92400e">
-              💡 Our team will verify your payment within <strong>2–6 hours</strong> on business days.
-            </div>
+            <table style="width:100%;font-size:14px;border-collapse:collapse;background:#f8f9ff;border-radius:10px">
+              <tr><td style="padding:10px;color:#888;width:40%">Name</td>      <td style="padding:10px;font-weight:600">${req.body.name}</td></tr>
+              <tr><td style="padding:10px;color:#888">Email</td>               <td style="padding:10px;font-weight:600">${req.body.email}</td></tr>
+              <tr><td style="padding:10px;color:#888">College</td>             <td style="padding:10px;font-weight:600">${req.body.college}</td></tr>
+              <tr><td style="padding:10px;color:#888">Domain</td>              <td style="padding:10px;font-weight:600">${req.body.domain}</td></tr>
+              <tr><td style="padding:10px;color:#888">Duration</td>            <td style="padding:10px;font-weight:600;color:#667eea">${req.body.duration}</td></tr>
+              <tr><td style="padding:10px;color:#888">Amount</td>              <td style="padding:10px;font-weight:700;color:#28a745">Rs.${req.body.amount}</td></tr>
+              <tr><td style="padding:10px;color:#888">Status</td>              <td style="padding:10px"><span style="background:#fff8e1;color:#92400e;padding:3px 10px;border-radius:999px;font-size:12px;font-weight:600">Pending Verification</span></td></tr>
+            </table>
+            <p style="margin-top:20px;font-size:13px;color:#92400e;background:#fffbeb;border:1px solid #fcd34d;border-radius:8px;padding:12px">
+              Our team will verify your payment within 2 to 6 hours on business days.
+            </p>
             <p style="font-size:13px;color:#555;margin-top:20px">Best regards,<br/><strong>Internship Team</strong></p>
           </div>
         </div>
       `
+    }).then(() => {
+      console.log("Pending email sent to", req.body.email);
+    }).catch(err => {
+      console.log("Email error:", err.message);
     });
 
-    console.log(`✅ Registration saved & pending email sent to ${req.body.email}`);
-    return res.json({ success: true, message: "Registration successful" });
-
   } catch (err) {
-    console.log("🔥 FULL BACKEND ERROR:", err);
+    console.log("BACKEND ERROR:", err);
     return res.json({ success: false, message: err.message });
   }
 });
 
-// ═══════════════════════════════════════════════════════════════
-//  ROUTE 2 — POST /send-status-email
-//  Called by admin.html when admin clicks Verify or Reject
-// ═══════════════════════════════════════════════════════════════
+// ═══════════════════════════════════════════════════
+// ROUTE 2 — POST /send-status-email (admin panel)
+// ═══════════════════════════════════════════════════
 app.post("/send-status-email", async (req, res) => {
 
   const { email, name, status } = req.body;
 
   if (!email || !name || !status) {
-    return res.json({ success: false, message: "email, name, status are required" });
+    return res.json({ success: false, message: "email, name, status required" });
   }
 
-  try {
+  // Send response immediately
+  res.json({ success: true, message: status + " email sending" });
 
-    if (status === "verified") {
+  // Send email in background
+  if (status === "verified") {
 
-      // ── Send CONFIRMED email ──────────────────────────────
-      await transporter.sendMail({
-        from:    "onboarding@resend.dev",
-        to:      email,
-        subject: "🎉 Internship Registration Confirmed!",
-        html: `
-          <div style="font-family:'Segoe UI',Arial,sans-serif;max-width:600px;margin:auto;border:1px solid #e0e0e0;border-radius:14px;overflow:hidden">
-            <div style="background:linear-gradient(135deg,#28a745,#1e7e34);color:white;padding:32px;text-align:center">
-              <div style="font-size:56px;margin-bottom:10px">🎉</div>
-              <h1 style="font-size:22px;margin:0 0 6px">Registration Confirmed!</h1>
-              <p style="opacity:.8;font-size:14px;margin:0">Payment verified · Seat secured</p>
-            </div>
-            <div style="padding:30px">
-              <p style="font-size:15px;color:#333">Dear <strong>${name}</strong>,</p>
-              <p style="font-size:14px;color:#555;line-height:1.7;margin:12px 0 22px">
-                Congratulations! 🎊 Your internship registration is <strong style="color:#28a745">officially confirmed</strong>.
-                Your payment has been verified successfully by our team.
-              </p>
-              <div style="background:#f0fdf4;border:1px solid #86efac;border-radius:10px;padding:18px;margin-bottom:22px">
-                <div style="font-size:14px;color:#065f46">
-                  <p>✅ <strong>Payment Verified</strong></p>
-                  <p style="margin-top:8px">✅ <strong>Seat Confirmed</strong></p>
-                  <p style="margin-top:8px">📅 Our team will send your joining kit and schedule within <strong>1–2 business days</strong>.</p>
-                </div>
-              </div>
-              <p style="font-size:13px;color:#555;margin-top:20px">Welcome aboard! 🚀<br/><strong>Internship Team</strong></p>
-            </div>
+    transporter.sendMail({
+      from:    `"Internship Team" <${process.env.GMAIL_USER}>`,
+      to:      email,
+      subject: "Internship Registration Confirmed!",
+      html: `
+        <div style="font-family:'Segoe UI',Arial,sans-serif;max-width:600px;margin:auto;border:1px solid #e0e0e0;border-radius:14px;overflow:hidden">
+          <div style="background:linear-gradient(135deg,#28a745,#1e7e34);color:white;padding:32px;text-align:center">
+            <h1 style="font-size:24px;margin:0 0 6px">Congratulations!</h1>
+            <p style="opacity:.8;font-size:14px;margin:0">Registration Confirmed - Payment Verified</p>
           </div>
-        `
-      });
-
-    } else if (status === "rejected") {
-
-      // ── Send REJECTED email ───────────────────────────────
-      await transporter.sendMail({
-        from:    "onboarding@resend.dev",
-        to:      email,
-        subject: "⚠️ Payment Verification Issue — Action Required",
-        html: `
-          <div style="font-family:'Segoe UI',Arial,sans-serif;max-width:600px;margin:auto;border:1px solid #e0e0e0;border-radius:14px;overflow:hidden">
-            <div style="background:linear-gradient(135deg,#dc3545,#b02030);color:white;padding:32px;text-align:center">
-              <div style="font-size:44px;margin-bottom:10px">⚠️</div>
-              <h1 style="font-size:22px;margin:0 0 6px">Payment Verification Issue</h1>
-              <p style="opacity:.8;font-size:14px;margin:0">Action required from your side</p>
+          <div style="padding:30px">
+            <p style="font-size:15px;color:#333">Dear <strong>${name}</strong>,</p>
+            <p style="font-size:14px;color:#555;line-height:1.7;margin:12px 0 22px">
+              Your internship registration is officially confirmed. Your payment has been verified successfully.
+            </p>
+            <div style="background:#f0fdf4;border:1px solid #86efac;border-radius:10px;padding:20px;margin-bottom:20px">
+              <p style="color:#065f46;font-size:14px;margin:0">Payment Verified</p>
+              <p style="color:#065f46;font-size:14px;margin:8px 0 0">Seat Confirmed</p>
+              <p style="color:#065f46;font-size:14px;margin:8px 0 0">Our team will send your joining kit within 1 to 2 business days.</p>
             </div>
-            <div style="padding:30px">
-              <p style="font-size:15px;color:#333">Dear <strong>${name}</strong>,</p>
-              <p style="font-size:14px;color:#555;line-height:1.7;margin:12px 0 22px">
-                We were unable to verify your payment screenshot. This could be because:
-              </p>
-              <ul style="font-size:14px;color:#555;line-height:2;margin-left:20px;margin-bottom:22px">
-                <li>Screenshot was unclear or incorrect</li>
-                <li>Payment amount did not match</li>
-                <li>Transaction could not be confirmed</li>
-              </ul>
-              <div style="background:#fff5f5;border:1px solid #fca5a5;border-radius:8px;padding:14px;font-size:13px;color:#7f1d1d">
-                📞 Please reply to this email or contact our support team with your correct payment proof to resolve this.
-              </div>
-              <p style="font-size:13px;color:#555;margin-top:20px">Regards,<br/><strong>Internship Team</strong></p>
-            </div>
+            <p style="font-size:13px;color:#555">Welcome aboard!<br/><strong>Internship Team</strong></p>
           </div>
-        `
-      });
-    }
+        </div>
+      `
+    }).then(() => {
+      console.log("Verified email sent to", email);
+    }).catch(err => {
+      console.log("Email error:", err.message);
+    });
 
-    console.log(`📧 Status email (${status}) sent to ${email}`);
-    return res.json({ success: true, message: `${status} email sent to ${email}` });
+  } else if (status === "rejected") {
 
-  } catch (err) {
-    console.log("Email error:", err);
-    return res.json({ success: false, message: err.message });
+    transporter.sendMail({
+      from:    `"Internship Team" <${process.env.GMAIL_USER}>`,
+      to:      email,
+      subject: "Payment Verification Issue - Action Required",
+      html: `
+        <div style="font-family:'Segoe UI',Arial,sans-serif;max-width:600px;margin:auto;border:1px solid #e0e0e0;border-radius:14px;overflow:hidden">
+          <div style="background:linear-gradient(135deg,#dc3545,#b02030);color:white;padding:32px;text-align:center">
+            <h1 style="font-size:22px;margin:0">Payment Verification Issue</h1>
+            <p style="opacity:.8;font-size:14px;margin:6px 0 0">Action required from your side</p>
+          </div>
+          <div style="padding:30px">
+            <p style="font-size:15px;color:#333">Dear <strong>${name}</strong>,</p>
+            <p style="font-size:14px;color:#555;line-height:1.7;margin:12px 0">
+              We could not verify your payment. Possible reasons:
+            </p>
+            <ul style="font-size:14px;color:#555;line-height:2;margin-left:20px;margin-bottom:20px">
+              <li>Screenshot was unclear or incorrect</li>
+              <li>Payment amount did not match</li>
+              <li>Transaction could not be confirmed</li>
+            </ul>
+            <div style="background:#fff5f5;border:1px solid #fca5a5;border-radius:8px;padding:14px;font-size:13px;color:#7f1d1d">
+              Please reply to this email with your correct payment proof.
+            </div>
+            <p style="font-size:13px;color:#555;margin-top:20px">Regards,<br/><strong>Internship Team</strong></p>
+          </div>
+        </div>
+      `
+    }).then(() => {
+      console.log("Rejected email sent to", email);
+    }).catch(err => {
+      console.log("Email error:", err.message);
+    });
   }
 });
 
-// ── Serve HTML files ──────────────────────────────────────────
+// Static files
 app.use(express.static(__dirname));
 
 app.get("/", (req, res) => {
@@ -237,10 +233,8 @@ app.get("/admin", (req, res) => {
   res.sendFile(path.join(__dirname, "admin.html"));
 });
 
-// ── Start ─────────────────────────────────────────────────────
+// Start
 const PORT = process.env.PORT || 5000;
 app.listen(PORT, () => {
-  console.log("═══════════════════════════════════════");
   console.log("Server running on port", PORT);
-  console.log("═══════════════════════════════════════");
 });
