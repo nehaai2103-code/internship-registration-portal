@@ -291,16 +291,18 @@
 </div>
 
 <script>
+
+   // EmailJS Configuration (2 Templates)
+const EMAILJS_SERVICE_ID = "service_r7wuzur";
+const EMAILJS_TEMPLATE_CONFIRMATION = "template_sikd1np";
+const EMAILJS_TEMPLATE_DECISION = "template_27v2zta";
+
   // Initialize EmailJS - REPLACE WITH YOUR ACTUAL PUBLIC KEY
   (function() {
     emailjs.init("J8k7TQ03F2wgWZyoV"); // Get from https://dashboard.emailjs.com
   })();
 
-  // EmailJS Configuration (2 Templates)
-const EMAILJS_SERVICE_ID = "service_r7wuzur";
-const EMAILJS_TEMPLATE_CONFIRMATION = "template_sikdnp";
-const EMAILJS_TEMPLATE_DECISION = "template_27vzztza";
-
+ 
   const BACKEND_URL = "/register";
   let selectedDuration = "";
   let selectedAmount   = 0;
