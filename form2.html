@@ -4,6 +4,8 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Internship Registration</title>
+  
+<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
   <style>
     * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI',sans-serif; }
     body { background:linear-gradient(135deg,#667eea,#764ba2); min-height:100vh; display:flex; justify-content:center; align-items:center; padding:20px; }
@@ -288,23 +290,20 @@
   </div>
 </div>
 
-<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
 <script>
   // Initialize EmailJS - REPLACE WITH YOUR ACTUAL PUBLIC KEY
   (function() {
     emailjs.init("J8k7TQ03F2wgWZyoV"); // Get from https://dashboard.emailjs.com
   })();
 
-  const BACKEND_URL = "/register";
-  
+  // EmailJS Configuration (2 Templates)
+const EMAILJS_SERVICE_ID = "service_r7wuzur";
+const EMAILJS_TEMPLATE_CONFIRMATION = "template_sikdnp";
+const EMAILJS_TEMPLATE_DECISION = "template_27vzztza";
 
+  const BACKEND_URL = "/register";
   let selectedDuration = "";
   let selectedAmount   = 0;
-
-  // EmailJS Configuration (2 Templates)
-  const EMAILJS_SERVICE_ID = "service_r7wuzur";      // Replace with your Service ID
-  const EMAILJS_TEMPLATE_CONFIRMATION = "template_sikd1np"; // Template 1
-  const EMAILJS_TEMPLATE_DECISION = "template_27v2zta";         // Template 2 (handles both)
 
   // ── Navigation ───────────────────────────────────────────────
   function goTo(step) {
