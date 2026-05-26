@@ -4,8 +4,7 @@
   <meta charset="UTF-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Internship Registration</title>
-  
-<script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
+  <script type="text/javascript" src="https://cdn.jsdelivr.net/npm/@emailjs/browser@4/dist/email.min.js"></script>
   <style>
     * { margin:0; padding:0; box-sizing:border-box; font-family:'Segoe UI',sans-serif; }
     body { background:linear-gradient(135deg,#667eea,#764ba2); min-height:100vh; display:flex; justify-content:center; align-items:center; padding:20px; }
@@ -13,441 +12,259 @@
     .header { background:linear-gradient(135deg,#667eea,#3d1368); color:white; padding:30px; text-align:center; }
     .header h1 { font-size:26px; margin-bottom:6px; }
     .header p { opacity:0.85; font-size:14px; }
-
     .progress-bar { display:flex; background:#f0f0f0; }
     .step-tab { flex:1; padding:12px; text-align:center; font-size:13px; color:#999; cursor:pointer; border-bottom:3px solid transparent; }
     .step-tab.active { color:#667eea; border-bottom:3px solid #667eea; font-weight:bold; }
     .step-tab.done { color:#28a745; border-bottom:3px solid #28a745; }
-
     .form-body { padding:30px; }
     .step { display:none; }
     .step.active { display:block; }
-
     .input-group { margin-bottom:18px; }
     label { display:block; margin-bottom:6px; font-weight:600; color:#444; font-size:14px; }
-    input, select, textarea {
-      width:100%; padding:11px 14px; border:2px solid #e0e0e0;
-      border-radius:8px; font-size:15px; transition:border 0.2s;
-    }
+    input, select, textarea { width:100%; padding:11px 14px; border:2px solid #e0e0e0; border-radius:8px; font-size:15px; }
     input:focus, select:focus, textarea:focus { border-color:#667eea; outline:none; }
     textarea { height:80px; resize:none; }
     .row { display:grid; grid-template-columns:1fr 1fr; gap:15px; }
-
     .duration-cards { display:grid; grid-template-columns:1fr 1fr 1fr; gap:12px; margin-top:8px; }
-    .duration-card {
-      border:2px solid #e0e0e0; border-radius:12px; padding:16px;
-      text-align:center; cursor:pointer; transition:all 0.2s;
-    }
+    .duration-card { border:2px solid #e0e0e0; border-radius:12px; padding:16px; text-align:center; cursor:pointer; transition:all 0.2s; }
     .duration-card:hover { border-color:#667eea; background:#f8f7ff; }
     .duration-card.selected { border-color:#667eea; background:#f0eeff; }
-    .duration-card input[type=radio] { display:none; }
     .duration-card .months { font-size:20px; font-weight:bold; color:#667eea; }
     .duration-card .price { font-size:17px; color:#28a745; font-weight:bold; margin-top:6px; }
-    .duration-card .desc { font-size:11px; color:#777; margin-top:4px; }
-
     .btn { width:100%; padding:14px; border:none; border-radius:8px; font-size:16px; cursor:pointer; margin-top:10px; font-weight:600; }
     .btn-primary { background:linear-gradient(135deg,#667eea,#764ba2); color:white; }
     .btn-success { background:#28a745; color:white; }
     .btn-outline { background:white; color:#667eea; border:2px solid #667eea; }
     .btn:hover { opacity:0.9; }
     .btn-row { display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-top:15px; }
-    .btn:disabled { opacity:0.6; cursor:not-allowed; }
-
     .payment-box { text-align:center; padding:10px 0; }
     .amount { font-size:32px; color:#667eea; font-weight:bold; margin-bottom:5px; }
     .qr-container { background:#f9f9f9; border:2px dashed #667eea; border-radius:12px; padding:20px; margin:15px 0; }
     .qr-container img { width:200px; height:200px; border-radius:8px; display:block; margin:auto; }
-
     .success-box { text-align:center; padding:30px 20px; display:none; }
     .success-box .tick { font-size:70px; margin-bottom:15px; }
     .success-box h2 { color:#28a745; margin-bottom:10px; }
-    .success-box p { color:#555; font-size:15px; line-height:1.7; }
-
     .err-msg { color:red; font-size:13px; margin-top:5px; display:none; }
-    .spinner {
-      display:inline-block; width:18px; height:18px;
-      border:3px solid rgba(255,255,255,.4); border-top-color:white;
-      border-radius:50%; animation:spin .7s linear infinite;
-      vertical-align:middle; margin-right:8px;
-    }
+    .spinner { display:inline-block; width:18px; height:18px; border:3px solid rgba(255,255,255,.4); border-top-color:white; border-radius:50%; animation:spin .7s linear infinite; vertical-align:middle; margin-right:8px; }
     @keyframes spin { to { transform:rotate(360deg); } }
-
-    @media(max-width:500px) {
-      .row { grid-template-columns:1fr; }
-      .duration-cards { grid-template-columns:1fr; }
-      .btn-row { grid-template-columns:1fr; }
-    }
+    @media(max-width:500px) { .row { grid-template-columns:1fr; } .duration-cards { grid-template-columns:1fr; } .btn-row { grid-template-columns:1fr; } }
   </style>
 </head>
 <body>
 <div class="container">
-
   <div class="header">
     <h1>🎓 Internship Registration</h1>
     <p>Fill the form below to secure your internship seat</p>
   </div>
-
   <div class="progress-bar">
     <div class="step-tab active" id="tab1">① Personal</div>
     <div class="step-tab" id="tab2">② Academic</div>
     <div class="step-tab" id="tab3">③ Duration</div>
     <div class="step-tab" id="tab4">④ Payment</div>
   </div>
-
   <div class="form-body">
-
-    <!-- STEP 1: Personal Info -->
+    <!-- STEP 1 -->
     <div class="step active" id="step1">
       <div class="row">
-        <div class="input-group">
-          <label>Full Name *</label>
-          <input type="text" id="name" placeholder="Enter your full name"/>
-          <div class="err-msg" id="err-name">Please enter your name</div>
-        </div>
-        <div class="input-group">
-          <label>Date of Birth *</label>
-          <input type="date" id="dob"/>
-          <div class="err-msg" id="err-dob">Please select date of birth</div>
-        </div>
+        <div class="input-group"><label>Full Name *</label><input type="text" id="name"/><div class="err-msg" id="err-name">Please enter your name</div></div>
+        <div class="input-group"><label>Date of Birth *</label><input type="date" id="dob"/><div class="err-msg" id="err-dob">Please select date of birth</div></div>
       </div>
       <div class="row">
-        <div class="input-group">
-          <label>Email Address *</label>
-          <input type="email" id="email" placeholder="you@email.com"/>
-          <div class="err-msg" id="err-email">Please enter valid email</div>
-        </div>
-        <div class="input-group">
-          <label>Phone Number *</label>
-          <input type="tel" id="phone" placeholder="10-digit number" maxlength="10"/>
-          <div class="err-msg" id="err-phone">Please enter 10-digit number</div>
-        </div>
+        <div class="input-group"><label>Email Address *</label><input type="email" id="email"/><div class="err-msg" id="err-email">Please enter valid email</div></div>
+        <div class="input-group"><label>Phone Number *</label><input type="tel" id="phone" maxlength="10"/><div class="err-msg" id="err-phone">Please enter 10-digit number</div></div>
       </div>
-      <div class="input-group">
-        <label>WhatsApp Number</label>
-        <input type="tel" id="whatsapp" placeholder="If different from phone" maxlength="10"/>
-      </div>
-      <div class="input-group">
-        <label>LinkedIn Profile URL</label>
-        <input type="url" id="linkedin" placeholder="https://linkedin.com/in/yourname"/>
-      </div>
+      <div class="input-group"><label>WhatsApp Number</label><input type="tel" id="whatsapp" maxlength="10"/></div>
+      <div class="input-group"><label>LinkedIn Profile URL</label><input type="url" id="linkedin"/></div>
       <button class="btn btn-primary" onclick="validateStep1()">Next → Academic Details</button>
     </div>
-
-    <!-- STEP 2: Academic Info -->
+    <!-- STEP 2 -->
     <div class="step" id="step2">
-      <div class="input-group">
-        <label>College / University Name *</label>
-        <input type="text" id="college" placeholder="Your college name"/>
-        <div class="err-msg" id="err-college">Please enter college name</div>
+      <div class="input-group"><label>College / University Name *</label><input type="text" id="college"/><div class="err-msg" id="err-college">Please enter college name</div></div>
+      <div class="row">
+        <div class="input-group"><label>Department / Branch *</label><input type="text" id="department"/><div class="err-msg" id="err-dept">Please enter department</div></div>
+        <div class="input-group"><label>Year of Study *</label><select id="year"><option value="">-- Select Year --</option><option>1st Year</option><option>2nd Year</option><option>3rd Year</option><option>4th Year</option><option>Passed Out</option></select><div class="err-msg" id="err-year">Please select year</div></div>
       </div>
       <div class="row">
-        <div class="input-group">
-          <label>Department / Branch *</label>
-          <input type="text" id="department" placeholder="e.g. CSE, ECE"/>
-          <div class="err-msg" id="err-dept">Please enter department</div>
-        </div>
-        <div class="input-group">
-          <label>Year of Study *</label>
-          <select id="year">
-            <option value="">-- Select Year --</option>
-            <option>1st Year</option>
-            <option>2nd Year</option>
-            <option>3rd Year</option>
-            <option>4th Year</option>
-            <option>Passed Out</option>
-          </select>
-          <div class="err-msg" id="err-year">Please select year</div>
-        </div>
+        <div class="input-group"><label>CGPA / Percentage</label><input type="text" id="cgpa"/></div>
+        <div class="input-group"><label>Internship Domain *</label><select id="domain"><option value="">-- Select Domain --</option><option>Web Development</option><option>Python Programming</option><option>Data Science</option><option>Machine Learning</option><option>Android Development</option><option>UI/UX Design</option><option>Cybersecurity</option></select><div class="err-msg" id="err-domain">Please select domain</div></div>
       </div>
-      <div class="row">
-        <div class="input-group">
-          <label>CGPA / Percentage</label>
-          <input type="text" id="cgpa" placeholder="e.g. 8.5 CGPA or 85%"/>
-        </div>
-        <div class="input-group">
-          <label>Internship Domain *</label>
-          <select id="domain">
-            <option value="">-- Select Domain --</option>
-            <option>Web Development</option>
-            <option>Python Programming</option>
-            <option>Data Science</option>
-            <option>Machine Learning</option>
-            <option>Android Development</option>
-            <option>UI/UX Design</option>
-            <option>Cybersecurity</option>
-          </select>
-          <div class="err-msg" id="err-domain">Please select domain</div>
-        </div>
-      </div>
-      <div class="input-group">
-        <label>Your Skills</label>
-        <textarea id="skills" placeholder="HTML, CSS, Python, etc."></textarea>
-      </div>
-      <div class="input-group">
-        <label>How did you hear about us?</label>
-        <select id="referral">
-          <option value="">-- Select --</option>
-          <option>Instagram</option>
-          <option>LinkedIn</option>
-          <option>College Notice Board</option>
-          <option>Friend Referral</option>
-          <option>Google Search</option>
-          <option>Other</option>
-        </select>
-      </div>
-      <div class="btn-row">
-        <button class="btn btn-outline" onclick="goTo(1)">← Back</button>
-        <button class="btn btn-primary" onclick="validateStep2()">Next → Choose Duration</button>
-      </div>
+      <div class="input-group"><label>Your Skills</label><textarea id="skills"></textarea></div>
+      <div class="input-group"><label>How did you hear about us?</label><select id="referral"><option value="">-- Select --</option><option>Instagram</option><option>LinkedIn</option><option>College Notice Board</option><option>Friend Referral</option><option>Google Search</option><option>Other</option></select></div>
+      <div class="btn-row"><button class="btn btn-outline" onclick="goTo(1)">← Back</button><button class="btn btn-primary" onclick="validateStep2()">Next → Choose Duration</button></div>
     </div>
-
-    <!-- STEP 3: Duration Selection -->
+    <!-- STEP 3 -->
     <div class="step" id="step3">
-      <div class="input-group">
-        <label>Select Internship Duration *</label>
+      <div class="input-group"><label>Select Internship Duration *</label>
         <div class="duration-cards">
-          <label class="duration-card" id="card1m" onclick="selectDuration('1 Month',1000,'card1m')">
-            <input type="radio" name="duration" value="1 Month"/>
-            <div class="months">1 Month</div>
-            <div class="price">Rs.1,000</div>
-            <div class="desc">Certificate + Training</div>
-          </label>
-          <label class="duration-card" id="card2m" onclick="selectDuration('2 Months',2000,'card2m')">
-            <input type="radio" name="duration" value="2 Months"/>
-            <div class="months">2 Months</div>
-            <div class="price">Rs.2,000</div>
-            <div class="desc">Certificate + Project</div>
-          </label>
-          <label class="duration-card" id="card3m" onclick="selectDuration('3 Months',3000,'card3m')">
-            <input type="radio" name="duration" value="3 Months"/>
-            <div class="months">3 Months</div>
-            <div class="price">Rs.3,000</div>
-            <div class="desc">Certificate + Project + LOR</div>
-          </label>
+          <label class="duration-card" id="card1m" onclick="selectDuration('1 Month',1000,'card1m')"><div class="months">1 Month</div><div class="price">Rs.1,000</div></label>
+          <label class="duration-card" id="card2m" onclick="selectDuration('2 Months',2000,'card2m')"><div class="months">2 Months</div><div class="price">Rs.2,000</div></label>
+          <label class="duration-card" id="card3m" onclick="selectDuration('3 Months',3000,'card3m')"><div class="months">3 Months</div><div class="price">Rs.3,000</div></label>
         </div>
         <div class="err-msg" id="err-duration">Please select a duration</div>
       </div>
-      <div class="input-group" style="margin-top:15px">
-        <label>Preferred Start Date</label>
-        <input type="date" id="startDate"/>
-      </div>
-      <div class="input-group">
-        <label>Any Message / Special Request</label>
-        <textarea id="message" placeholder="Optional message..."></textarea>
-      </div>
-      <div class="btn-row">
-        <button class="btn btn-outline" onclick="goTo(2)">← Back</button>
-        <button class="btn btn-primary" onclick="validateStep3()">
-          Next → Payment Rs.<span id="amtPreview">-</span>
-        </button>
-      </div>
+      <div class="input-group"><label>Preferred Start Date</label><input type="date" id="startDate"/></div>
+      <div class="input-group"><label>Any Message / Special Request</label><textarea id="message"></textarea></div>
+      <div class="btn-row"><button class="btn btn-outline" onclick="goTo(2)">← Back</button><button class="btn btn-primary" onclick="validateStep3()">Next → Payment Rs.<span id="amtPreview">-</span></button></div>
     </div>
-
-    <!-- STEP 4: Payment -->
+    <!-- STEP 4 -->
     <div class="step" id="step4">
       <div class="payment-box">
         <p style="color:#555;margin-bottom:5px;">Amount to Pay</p>
         <div class="amount">Rs.<span id="payAmt"></span></div>
         <p style="color:#888;font-size:13px;">for <span id="payDuration"></span> Internship</p>
-
-        <div class="qr-container">
-          <p style="font-weight:bold;margin-bottom:15px;">📱 Scan QR to Pay</p>
-          <img src="qr.jpeg" alt="QR Code" width="200"/>
-          <p style="font-size:12px;color:#888;margin-top:10px;">
-            Pay using PhonePe / GPay / Paytm
-          </p>
-        </div>
-
-        <div class="input-group" style="text-align:left;margin-top:10px;">
-          <label>Upload Payment Screenshot *</label>
-          <input type="file" id="paymentScreenshot" accept="image/*"/>
-          <div class="err-msg" id="err-screenshot">Please upload payment screenshot</div>
-        </div>
-
-        <div class="btn-row">
-          <button class="btn btn-outline" onclick="goTo(3)">← Back</button>
-          <button class="btn btn-success" id="submitBtn" onclick="submitForm()">
-            ✅ Submit Registration
-          </button>
-        </div>
+        <div class="qr-container"><p style="font-weight:bold;margin-bottom:15px;">📱 Scan QR to Pay</p><img src="qr.jpeg" alt="QR Code" width="200"/><p style="font-size:12px;color:#888;margin-top:10px;">Pay using PhonePe / GPay / Paytm</p></div>
+        <div class="input-group"><label>Upload Payment Screenshot *</label><input type="file" id="paymentScreenshot" accept="image/*"/><div class="err-msg" id="err-screenshot">Please upload payment screenshot</div></div>
+        <div class="btn-row"><button class="btn btn-outline" onclick="goTo(3)">← Back</button><button class="btn btn-success" id="submitBtn" onclick="submitForm()">✅ Submit Registration</button></div>
       </div>
     </div>
-
-    <!-- Success Screen -->
-    <div class="success-box" id="successBox">
-      <div class="tick">🎉</div>
-      <h2>Registration Successful!</h2>
-      <p>
-        Hi <strong id="successName"></strong>,<br/>
-        Your internship registration is confirmed.<br/>
-        A confirmation email has been sent to <strong id="successEmail"></strong>.<br/><br/>
-        <strong>Duration:</strong> <span id="successDuration"></span><br/>
-        <strong>Amount Paid:</strong> Rs.<span id="successAmt"></span><br/><br/>
-        📩 Check your inbox (and spam folder) for your confirmation letter.
-      </p>
-    </div>
-
+    <!-- Success -->
+    <div class="success-box" id="successBox"><div class="tick">🎉</div><h2>Registration Successful!</h2><p>Hi <strong id="successName"></strong>,<br/>Your internship registration is confirmed.<br/>A confirmation email has been sent to <strong id="successEmail"></strong>.<br/><br/><strong>Duration:</strong> <span id="successDuration"></span><br/><strong>Amount Paid:</strong> Rs.<span id="successAmt"></span><br/><br/>📩 Check your inbox (and spam folder) for your confirmation letter.</p></div>
   </div>
 </div>
 
 <script>
-
-   // EmailJS Configuration (2 Templates)
+// ========== EMAILJS CONFIGURATION ==========
 const EMAILJS_SERVICE_ID = "service_r7wuzur";
 const EMAILJS_TEMPLATE_CONFIRMATION = "template_sikd1np";
 const EMAILJS_TEMPLATE_DECISION = "template_27v2zta";
 
-  // Initialize EmailJS - REPLACE WITH YOUR ACTUAL PUBLIC KEY
-  (function() {
-    emailjs.init("J8k7TQ03F2wgWZyoV"); // Get from https://dashboard.emailjs.com
-  })();
+// Initialize EmailJS
+emailjs.init("J8k7TQ03F2wgWZyoV");
 
+const BACKEND_URL = "https://internship-registration-portal.onrender.com";
+let selectedDuration = "";
+let selectedAmount = 0;
 
-  const BACKEND_URL = "https://internship-registration-portal.onrender.com";
-  let selectedDuration = "";
-  let selectedAmount   = 0;
+// Navigation
+function goTo(step) {
+  document.querySelectorAll(".step").forEach(s => s.classList.remove("active"));
+  document.querySelectorAll(".step-tab").forEach(t => t.classList.remove("active","done"));
+  document.getElementById("step" + step).classList.add("active");
+  document.getElementById("tab" + step).classList.add("active");
+  for(let i = 1; i < step; i++) { document.getElementById("tab" + i).classList.add("done"); }
+  window.scrollTo(0, 0);
+}
 
-  // ── Navigation ───────────────────────────────────────────────
-  function goTo(step) {
-    document.querySelectorAll(".step").forEach(s => s.classList.remove("active"));
-    document.querySelectorAll(".step-tab").forEach(t => t.classList.remove("active","done"));
-    document.getElementById("step" + step).classList.add("active");
-    document.getElementById("tab"  + step).classList.add("active");
-    for(let i = 1; i < step; i++) {
-      document.getElementById("tab" + i).classList.add("done");
-    }
-    window.scrollTo(0, 0);
+function showErr(id) { document.getElementById(id).style.display = "block"; }
+function hideErr(id) { document.getElementById(id).style.display = "none"; }
+
+function validateStep1() {
+  let ok = true;
+  if (!document.getElementById("name").value.trim()) { showErr("err-name"); ok=false; } else hideErr("err-name");
+  if (!document.getElementById("dob").value) { showErr("err-dob"); ok=false; } else hideErr("err-dob");
+  if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(document.getElementById("email").value)) { showErr("err-email"); ok=false; } else hideErr("err-email");
+  if (!/^\d{10}$/.test(document.getElementById("phone").value)) { showErr("err-phone"); ok=false; } else hideErr("err-phone");
+  if (ok) goTo(2);
+}
+
+function validateStep2() {
+  let ok = true;
+  if (!document.getElementById("college").value.trim()) { showErr("err-college"); ok=false; } else hideErr("err-college");
+  if (!document.getElementById("department").value.trim()) { showErr("err-dept"); ok=false; } else hideErr("err-dept");
+  if (!document.getElementById("year").value) { showErr("err-year"); ok=false; } else hideErr("err-year");
+  if (!document.getElementById("domain").value) { showErr("err-domain"); ok=false; } else hideErr("err-domain");
+  if (ok) goTo(3);
+}
+
+function validateStep3() {
+  if (!selectedDuration) { showErr("err-duration"); return; }
+  hideErr("err-duration");
+  goTo(4);
+}
+
+function selectDuration(dur, amt, cardId) {
+  selectedDuration = dur;
+  selectedAmount = amt;
+  document.querySelectorAll(".duration-card").forEach(c => c.classList.remove("selected"));
+  document.getElementById(cardId).classList.add("selected");
+  document.getElementById("amtPreview").innerText = amt;
+  document.getElementById("payAmt").innerText = amt;
+  document.getElementById("payDuration").innerText = dur;
+}
+
+// Send Confirmation Email
+async function sendConfirmationEmail(userData) {
+  const templateParams = {
+    to_email: userData.email,
+    to_name: userData.name,
+    internship_type: userData.domain,
+    registration_id: userData.id || Date.now(),
+    amount: selectedAmount,
+    duration: selectedDuration,
+    status: "Pending Verification"  // ✅ FIXED: was "satatus"
+  };
+  
+  try {
+    await emailjs.send(EMAILJS_SERVICE_ID, EMAILJS_TEMPLATE_CONFIRMATION, templateParams);
+    console.log("✅ Confirmation email sent to:", userData.email);
+    return true;
+  } catch (error) {
+    console.error("❌ EmailJS error:", error);
+    return false;
   }
+}
 
-  // ── Validation helpers ───────────────────────────────────────
-  function showErr(id) {
-    document.getElementById(id).style.display = "block";
-  }
-  function hideErr(id) {
-    document.getElementById(id).style.display = "none";
-  }
+// Submit Form
+async function submitForm() {
+  const screenshot = document.getElementById("paymentScreenshot").files[0];
+  if (!screenshot) { showErr("err-screenshot"); return; }
+  hideErr("err-screenshot");
 
-  function validateStep1() {
-    let ok = true;
-    if (!document.getElementById("name").value.trim())         { showErr("err-name");  ok=false; } else hideErr("err-name");
-    if (!document.getElementById("dob").value)                 { showErr("err-dob");   ok=false; } else hideErr("err-dob");
-    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(document.getElementById("email").value)) { showErr("err-email"); ok=false; } else hideErr("err-email");
-    if (!/^\d{10}$/.test(document.getElementById("phone").value))                   { showErr("err-phone"); ok=false; } else hideErr("err-phone");
-    if (ok) goTo(2);
-  }
+  const btn = document.getElementById("submitBtn");
+  btn.disabled = true;
+  btn.innerHTML = '<span class="spinner"></span> Submitting...';
 
-  function validateStep2() {
-    let ok = true;
-    if (!document.getElementById("college").value.trim())    { showErr("err-college"); ok=false; } else hideErr("err-college");
-    if (!document.getElementById("department").value.trim()) { showErr("err-dept");    ok=false; } else hideErr("err-dept");
-    if (!document.getElementById("year").value)              { showErr("err-year");    ok=false; } else hideErr("err-year");
-    if (!document.getElementById("domain").value)            { showErr("err-domain");  ok=false; } else hideErr("err-domain");
-    if (ok) goTo(3);
-  }
+  const formData = new FormData();
+  formData.append("name", document.getElementById("name").value);
+  formData.append("email", document.getElementById("email").value);
+  formData.append("phone", document.getElementById("phone").value);
+  formData.append("whatsapp", document.getElementById("whatsapp").value);
+  formData.append("dob", document.getElementById("dob").value);
+  formData.append("linkedin", document.getElementById("linkedin").value);
+  formData.append("college", document.getElementById("college").value);
+  formData.append("department", document.getElementById("department").value);
+  formData.append("year", document.getElementById("year").value);
+  formData.append("cgpa", document.getElementById("cgpa").value);
+  formData.append("domain", document.getElementById("domain").value);
+  formData.append("skills", document.getElementById("skills").value);
+  formData.append("referral", document.getElementById("referral").value);
+  formData.append("duration", selectedDuration);
+  formData.append("amount", selectedAmount);
+  formData.append("startDate", document.getElementById("startDate").value);
+  formData.append("message", document.getElementById("message").value);
+  formData.append("paymentScreenshot", screenshot);
 
-  function validateStep3() {
-    if (!selectedDuration) { showErr("err-duration"); return; }
-    hideErr("err-duration");
-    goTo(4);
-  }
+  try {
+    const response = await fetch(BACKEND_URL + "/register", { method: "POST", body: formData });
+    const result = await response.json();
 
-  // ── Duration Selection ───────────────────────────────────────
-  function selectDuration(dur, amt, cardId) {
-    selectedDuration = dur;
-    selectedAmount   = amt;
-    document.querySelectorAll(".duration-card").forEach(c => c.classList.remove("selected"));
-    document.getElementById(cardId).classList.add("selected");
-    document.getElementById("amtPreview").innerText = amt.toLocaleString();
-    document.getElementById("payAmt").innerText     = amt.toLocaleString();
-    document.getElementById("payDuration").innerText = dur;
-  }
-
-  // ── Send Confirmation Email via EmailJS (Template 1) ─────────
-  async function sendConfirmationEmail(userData) {
-    const templateParams = {
-      to_email: userData.email,
-      to_name: userData.name,
-      internship_type: userData.domain,
-      registration_id: userData.id || Date.now(),
-      amount: selectedAmount,
-      duration: selectedDuration,
-      satatus:"Pending Verification"
-    };
-    
-    try {
-      await emailjs.send(service_r7wuzur, template_sikd1np, templateParams);
-      console.log("Confirmation email sent to:", userData.email);
-      return true;
-    } catch (error) {
-      console.error("EmailJS error:", error);
-      return false;
-    }
-  }
-
-  // ── Submit Form ──────────────────────────────────────────────
-  async function submitForm() {
-    const screenshot = document.getElementById("paymentScreenshot").files[0];
-    if (!screenshot) { showErr("err-screenshot"); return; }
-    hideErr("err-screenshot");
-
-    const btn = document.getElementById("submitBtn");
-    btn.disabled   = true;
-    btn.innerHTML  = '<span class="spinner"></span> Submitting...';
-
-    const formData = new FormData();
-    formData.append("name",       document.getElementById("name").value);
-    formData.append("email",      document.getElementById("email").value);
-    formData.append("phone",      document.getElementById("phone").value);
-    formData.append("whatsapp",   document.getElementById("whatsapp").value);
-    formData.append("dob",        document.getElementById("dob").value);
-    formData.append("linkedin",   document.getElementById("linkedin").value);
-    formData.append("college",    document.getElementById("college").value);
-    formData.append("department", document.getElementById("department").value);
-    formData.append("year",       document.getElementById("year").value);
-    formData.append("cgpa",       document.getElementById("cgpa").value);
-    formData.append("domain",     document.getElementById("domain").value);
-    formData.append("skills",     document.getElementById("skills").value);
-    formData.append("referral",   document.getElementById("referral").value);
-    formData.append("duration",   selectedDuration);
-    formData.append("amount",     selectedAmount);
-    formData.append("startDate",  document.getElementById("startDate").value);
-    formData.append("message",    document.getElementById("message").value);
-    formData.append("paymentScreenshot", screenshot);
-
-    try {
-      const response = await fetch(BACKEND_URL, { method:"POST", body: formData });
-      const result   = await response.json();
-
-      if (result.success) {
-        // Send confirmation email via EmailJS
-        const userData = {
-          name: document.getElementById("name").value,
-          email: document.getElementById("email").value,
-          domain: document.getElementById("domain").value,
-          id: result.registrationId
-        };
-        await sendConfirmationEmail(userData);
-        
-        document.querySelectorAll(".step").forEach(s => s.style.display = "none");
-        document.querySelectorAll(".step-tab").forEach(t => t.classList.add("done"));
-        document.getElementById("successBox").style.display    = "block";
-        document.getElementById("successName").innerText       = document.getElementById("name").value;
-        document.getElementById("successEmail").innerText      = document.getElementById("email").value;
-        document.getElementById("successDuration").innerText   = selectedDuration;
-        document.getElementById("successAmt").innerText        = selectedAmount.toLocaleString();
-      } else {
-        alert("Error: " + result.message);
-        btn.disabled  = false;
-        btn.innerHTML = "✅ Submit Registration";
-      }
-    } catch(err) {
-      console.log(err);
-      alert("Server error. Please try again.");
-      btn.disabled  = false;
+    if (result.success) {
+      const userData = {
+        name: document.getElementById("name").value,
+        email: document.getElementById("email").value,
+        domain: document.getElementById("domain").value,
+        id: result.registrationId
+      };
+      await sendConfirmationEmail(userData);
+      
+      document.querySelectorAll(".step").forEach(s => s.style.display = "none");
+      document.getElementById("successBox").style.display = "block";
+      document.getElementById("successName").innerText = document.getElementById("name").value;
+      document.getElementById("successEmail").innerText = document.getElementById("email").value;
+      document.getElementById("successDuration").innerText = selectedDuration;
+      document.getElementById("successAmt").innerText = selectedAmount;
+    } else {
+      alert("Error: " + result.message);
+      btn.disabled = false;
       btn.innerHTML = "✅ Submit Registration";
     }
+  } catch(err) {
+    console.log(err);
+    alert("Server error. Please try again.");
+    btn.disabled = false;
+    btn.innerHTML = "✅ Submit Registration";
   }
+}
 </script>
-
 </body>
 </html>
